@@ -1,0 +1,53 @@
+/*
+    `19' v1.0
+    (c) Simon Speight 1996
+
+    ARexx script for OctaMED v6+ which calculates the offset required
+    for command 19xx ("Sample Start Offset").  See documentation for more.
+
+    $VER: 19.omed v1.0 (28.1.96)
+
+*/
+
+ADDRESS octamed_rexx
+OPTIONS RESULTS
+
+PARSE ARG cl
+
+'in_gettype VAR type'
+IF type = 'EMPTY' THEN DO
+    'wi_request "I need a sample to work on!" "Oops!"'
+    EXIT
+END
+
+IF (type = 'SYNTH') | (type = 'UNKNOWN') THEN DO
+    'wi_request "Instrument is not of required type." "Oops!"'
+    EXIT
+END
+
+'sa_getsamplelength'
+IF RESULT ~> 255 THEN DO
+    'wi_request "Sample is too small." "Oh"'
+    EXIT
+END
+
+'sa_getrangestart VAR rangestart'
+'sa_getrangeend VAR rangeend'
+
+IF (rangestart = 0) & (rangeend = 0) THEN DO
+    'wi_request "Set a range and try again." "OK"'
+    EXIT
+END
+
+offset= D2X(Trunc((rangestart / 256) + 0.5,0))
+
+IF UPPER(cl) = 'REQ' THEN DO
+    reqstr= '"Offset 'offset' required." "Thanks!"'
+    'wi_request' reqstr
+    EXIT
+END
+
+IF UPPER(cl) ~= 'REQ' THEN DO
+    'wi_showstring Offset 'offset' required.'
+    EXIT
+END

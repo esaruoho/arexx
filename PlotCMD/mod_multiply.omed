@@ -1,0 +1,44 @@
+/*
+	ARexx script for use with PlotCMD
+	(PlotCMD is a MUIRexx script for use with OctaMED Soundstudio)
+	Read the PlotCMD doc for details
+*/
+
+ADDRESS OCTAMED_REXX
+OPTIONS RESULTS
+
+IN_SELECT LAST
+CALL checkifsample()
+
+SA_GETSAMPLELENGTH
+odd=BITTST(RESULT, 0)		/* test LSB of samplelength => odd/even */
+
+SA_CHANGEPITCH SOURCE 1 DEST 2
+SA_RANGE ALL
+SA_COPYRANGE
+SA_PASTE
+
+IF (odd==1) THEN DO		/* add the odd sample lost at up-pitching */
+   SA_GETSAMPLELENGTH VAR len
+   SA_RANGE START len-1 END len
+   SA_COPYRANGE
+   SA_PASTE
+END
+
+SA_SHOW ALL
+
+EXIT
+
+
+
+
+/*              P R O C E D U R E S
+-----------------------------------------------------*/
+
+checkifsample: PROCEDURE
+   IN_GETTYPE VAR type
+   IF ~(type == SAMPLE | type == SAMPLE16) THEN DO
+      WI_REQUEST '"No sample!"' '"Ok"'
+      EXIT
+   END
+return

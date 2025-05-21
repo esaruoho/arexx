@@ -1,0 +1,33 @@
+/*
+	ARexx script for use with PlotCMD
+	(PlotCMD is a MUIRexx script for use with OctaMED Soundstudio)
+	Read the PlotCMD doc for details
+*/
+
+ADDRESS OCTAMED_REXX
+OPTIONS RESULTS
+
+IN_SELECT LAST
+CALL checkifsample()
+
+SA_RANGE ALL
+SA_INVERTRANGE			/* due to bug in OctaMED ?? */
+SA_ADJUSTYRANGE 8
+SA_INVERTRANGE
+SA_RANGE START 0 END 0
+
+EXIT
+
+
+
+
+/*              P R O C E D U R E S
+-----------------------------------------------------*/
+
+checkifsample: PROCEDURE
+   IN_GETTYPE VAR type
+   IF ~(type == SAMPLE | type == SAMPLE16) THEN DO
+      WI_REQUEST '"No sample!"' '"Ok"'
+      EXIT
+   END
+return

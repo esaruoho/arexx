@@ -1,0 +1,131 @@
+/*
+    Infoissimo v1.1
+    (c) Simon Speight 1996 - Freely Distributable
+
+    ARexx script for OctaMED v6+ which gives you a lot of info
+    about your current project.  See documentation for more.
+
+    $VER: Info.omed v1.1 (19.2.96)
+
+*/
+
+/*
+
+    Below are the two variables governing the file size - feel free to edit
+    these to suit you requirements (see documentation for more).
+
+*/
+
+format = 'MMD1'
+type = 'CURRSONG'
+
+/* Touch anything below here at your peril! */
+
+ADDRESS octamed_rexx
+OPTIONS RESULTS
+
+IF ~show(l,"rexxreqtools.library") THEN DO
+    IF ~addlib("rexxreqtools.library", 0, -30) THEN DO
+        'wi_request "Please install the rexxreqtools.library." "OK"'
+        EXIT
+    END
+END
+
+/* Preparation... */
+
+nl= '0a'x
+gadgets= '_OctaMED|_Song|S_ection|_Instruments|_Annotation|_Cancel'
+tagstring= 'rtez_flags = ezreqf_centertext|ezreqf_noreturnkey rt_pubscrname=OCTAMED'
+
+sample= 0
+synth= 0
+hybrid= 0
+extsample= 0
+sample16= 0
+unknown= 0
+unused= 0
+
+'wi_showstring Infoissimo is assessing current project.  Please wait...'
+
+/* Let's find out what is happening then... */
+
+'ve_octamed VAR octamed'
+'ve_octamedrexx VAR octamedrexx'
+'sg_getname VAR name' ; IF name = '' THEN name= '<unnamed>'
+'sg_getcurrentsongnumber VAR currentsongnumber'
+'sg_getnumberofsongs VAR numberofsongs'
+'ed_getsectionname VAR sectionname' ; IF sectionname = '' THEN sectionname= '<unnamed>'
+'ed_getcurrsection VAR currsection'
+'ed_getnumsections VAR numsections'
+'ed_getnumblocks VAR numblocks' ; IF numblocks = 1 THEN numblocks= numblocks' block' ; ELSE numblocks= numblocks' blocks'
+'sg_getannostring VAR annostring' ; IF annostring = '' THEN annostring= '<no annotation>'
+'sg_getchannelmode VAR channelmode'
+'sg_gettempo VAR tempo_main'
+'sg_gettempotpl var tempo_tpl'
+'sg_gettempomode VAR tempomode'; tempo= 'Tempo = 'tempomode' 'tempo_main'/'tempo_tpl
+if tempomode = 'BPM' then do
+   'sg_gettempolpb var tempo_lpb'
+   tempo= tempo' ('tempo_lpb' LPB)'
+end
+'sg_getfilesize 'format type' VAR size'
+
+'op_update off'
+
+/* Poll instruments */
+
+'in_getnumber VAR currinst'
+
+DO instno = 1 TO 63
+    'in_select' instno
+    'in_isslotused'
+    IF RESULT = 1 THEN DO
+        'in_gettype'
+        IF RESULT = 'SAMPLE' THEN sample= sample+1
+        IF RESULT = 'SYNTH' THEN synth= synth+1
+        IF RESULT = 'HYBRID' THEN hybrid= hybrid+1
+        IF RESULT = 'EXTSAMPLE' THEN extsample= extsample+1
+        IF RESULT = 'SAMPLE16' THEN sample16= sample16+1
+        IF RESULT = 'UNKNOWN' THEN unknown= unknown+1
+/* If anyone manages to get any 'unknown' instruments, do tell me how! */
+    END
+END
+
+/* Poll blocks */
+
+'ed_getnumblocks VAR bl'
+DO loop = 0 TO bl-1
+    'ed_isblockinseq block' loop
+    IF RESULT = 0 THEN unused= unused+1
+END
+
+/* Sort out a bit of syntax */
+
+IF sample = 1 THEN sample= sample' sample' ; ELSE sample= sample' samples'
+IF synth = 1 THEN synth= synth' synth sound' ; ELSE synth= synth' synth sounds'
+IF hybrid = 1 THEN hybrid= hybrid' hybrid' ; ELSE hybrid= hybrid' hybrids'
+IF extsample= 1 THEN extsample= extsample' external sample' ; ELSE extsample= extsample' external samples'
+IF sample16 = 1 THEN sample16= sample16' 16-bit sample' ; ELSE sample16= sample16' 16-bit samples'
+IF unknown = 1 THEN unknown= unknown' unknown instrument' ; ELSE unknown= unknown' unknown instruments'
+
+/* Let's get down to business then... */
+
+'wi_showstring'
+
+'in_select' currinst
+
+'op_update on'
+
+RESULT = rtezrequest('Infoissimo v1.1'nl'(c) Simon Speight 1996'nl nl'Tells you everything you wanted to know (and'nl'probably more) about your current OctaMED project.'nl nl'Select category to see information about:',gadgets,'Infoissimo v1.1',tagstring)
+
+loop:
+
+SELECT
+    WHEN RESULT = 1 THEN RESULT = rtezrequest('OctaMED Pro v'octamed'  -  ARexx Implementation v'octamedrexx,gadgets,'OctaMED Info',tagstring)
+    WHEN RESULT = 2 THEN RESULT = rtezrequest('Current 'channelmode' channel song ('currentsongnumber' of 'numberofsongs') name:'nl'"'name'"'nl nl 'File size ('format', 'type'): 'nl size 'bytes'nl nl tempo nl'Consists of 'numblocks' ('unused' unused)',gadgets,'Song Info',tagstring)
+    WHEN RESULT = 3 THEN RESULT = rtezrequest('Current section ('currsection' of 'numsections') name: "'sectionname'"',gadgets,'Section Info',tagstring)
+    WHEN RESULT = 4 THEN RESULT = rtezrequest('Current project uses;'nl sample nl synth nl hybrid nl extsample nl sample16 nl unknown,gadgets,'Instrument Info',tagstring)
+    WHEN RESULT = 5 THEN RESULT = rtezrequest('Current annotation (short):'nl'"'annostring'"',gadgets,'Annotation Info',tagstring)
+    OTHERWISE EXIT
+END
+
+CALL loop

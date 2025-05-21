@@ -1,0 +1,154 @@
+-------------------------------------------------------------------------------
+
+           D.U.B. (Delete Unused Blocks) Plus v1.1 - by Simon Speight
+                                    (c) 1996
+
+                      **** Sound Studio compatible ****
+
+-------------------------------------------------------------------------------
+
+
+About D.U.B. Plus
+~~~~~~~~~~~~~~~~~
+
+    D.U.B. Plus is an ARexx script for OctaMED v6 or above which can remove from
+your current song all of the blocks that do not appear in in the playing
+sequence - a process I found myself going through a lot by hand, so I thought a
+script would make my life easier.
+
+    D.U.B. Plus grew out of another script I wrote called simply D.U.B.  That
+script was quite passive - it went through, found all the unused blocks, and
+deleted them.  D.U.B. Plus gives you, the user, more control over the process.
+
+
+Requirements
+~~~~~~~~~~~~
+
+    This script uses some functions of the RexxReqTools package, and so you will
+need the following files in LIBS: - rexxreqtools.library, reqtools.library,
+rexxsyslib.library and diskfont.library.
+
+    I can't see the last three of those being much problem - diskfont.library
+comes with Workbench, rexxsyslib.library comes with ARexx, and has anyone NOT
+got ReqTools installed? - but if you need to get hold of RexxReqTools, the
+distribution can be found on the Aminet as /util/rexx/RexxReqTools.lha.
+
+
+Installation
+~~~~~~~~~~~~
+
+    Assuming you have the files mentioned above in the right place, then all you
+need to do is;
+
+- copy the file DUB+.omed to a directory of your choice (I recommend the Rexx
+drawer inside the main OctaMED drawer)
+
+- set up a keyboard shortcut within OctaMED (the Settings/Keyboard Shortcuts
+menu) for the script, remembering to add any parameters you may need [read
+"Usage" below for details of the parameters].
+
+
+Usage
+~~~~~
+
+Command line usage:
+
+RX DUB+.omed [FORCE][SIMPLE]
+
+    When you start D.U.B. Plus, you are first greeted with the introductory
+requester (just so you know which script you have started, and who wrote it!!). 
+Select "Start Scan" to begin.
+
+    The first thing D.U.B. Plus does is to check if your current project has been
+modified since it was last saved.  If it has been modified, D.U.B. Plus will
+warn you and give you another chance to stop the script there and then.  Select
+"Continue" to proceed.
+
+[The above check can be disabled by use of the FORCE parameter]
+
+    Now the real work begins; D.U.B. Plus starts to scan through all your
+blocks, seeing if any of them are not in the playing sequence (ie, "Unused").  
+When it comes to one that isn't it takes you to that block and pops up another
+requester.  From this requester you have a number of options:
+
+Play/Stop : Click once and you will hear the unused block which D.U.B. Plus has
+            just found (to help you decide if you want it or not).  Click again
+            to stop the block playing.
+
+Delete    : Deletes the block D.U.B. Plus has just taken you to, and continues
+            the scan.
+
+Ignore    : Leaves the block alone and continues the scan.
+
+Cancel    : Stops the script there and then.
+
+    (You may notice that D.U.B. Plus searches through your blocks in reverse
+order - I won't bore you with the details of why, it just made it easier for
+me!)
+
+    Once D.U.B. Plus stops (whether it has scanned all blocks, or if you stop it
+yourself) it will tell you what it has done by way of a sentence in the title
+bar of the OctaMED screen.  It tells you exactly how many unused blocks it found
+(note: this means how many unused blocks it found in the blocks it scanned - if
+you stop the script prematurely, it cannot know about any blocks it didn't
+scan!) and how many blocks it deleted.
+
+
+    Sometimes I find it useful just to be able to let D.U.B. Plus loose to
+freely delete any blocks which aren't in the playing sequence (when a tune is
+finished, for instance).  If you wish to do this, supply the SIMPLE parameter to
+the script.  Execution will be the same, except that when D.U.B. Plus finds an
+unused block, instead of asking for you permission to delete it, it just deletes
+it and gets on with it.
+
+NOTE: the order of the parameters does not matter - therefore, adding "FORCE
+SIMPLE" after the filename does the same job as adding "SIMPLE FORCE".
+
+
+Credits & Thanks
+~~~~~~~~~~~~~~~~
+
+Thanks to:
+
+- Teijo Kinnunen & Ray Burt-Frost for the wonderful OctaMED!
+
+- Rafael D'Halleweyn for the brilliant RexxReqTools package, and Nico François
+for ReqTools.
+
+All else by me! :-)
+
+
+Legal
+~~~~~
+
+    This is complete Freeware - copy it and spread it to your heart's content. 
+I do ask that you leave the archive exactly as it is though - no removal,
+addition or alteration of data (not including archiving method).
+
+    RBF Software have permission to include this with future releases of OctaMED
+free of charge, should they wish to do so.
+
+    There is ABSOLUTELY NO WARRANTY with this script.  I have tested it to the
+best of my abilities, but I will accept no responsibility for any damage
+resulting from its use.  By executing the script you indicate your acceptance of
+these terms.
+
+
+Contact
+~~~~~~~
+
+    I would appreciate it, if you find this script useful, if you would drop me
+a line and let me know.  I can be found at the following addresses (in order of
+preference);
+
+    simons@telecall.co.uk
+    2:255/110.7@fidonet
+    39:137/12.34@amiganet
+
+
+    Please feel free to contact me if you find any bugs in D.U.B. Plus, or if
+you have any suggestions regarding D.U.B. Plus, or any other script you would
+like to see written - I guarantee that all suggestions will be considered.
+
+
+"The End" - Simon...

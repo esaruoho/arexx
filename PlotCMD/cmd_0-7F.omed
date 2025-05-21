@@ -1,0 +1,79 @@
+/*
+	ARexx script for use with PlotCMD
+	(PlotCMD is a MUIRexx script for use with OctaMED Soundstudio)
+	Read the PlotCMD doc for details
+*/
+
+String_Contents		=	0x80428ffd
+OPTIONS RESULTS
+
+CALL openlibs()
+
+PARSE ARG cmd					/* Argument = command in hex (ex: 0C) */
+						/* Arg='ENTRY' => get cmd from slider */
+IF (UPPER(cmd)=="ENTRY") THEN DO
+   ADDRESS PLOTCMD
+   STRING ID CMDST String_Contents		/* Returns pointer to string */
+   strptr=D2C(RESULT)
+   cmd=IMPORT(strptr)				/* Gets string entry */
+END
+
+ADDRESS OCTAMED_REXX
+
+IN_SELECT LAST
+CALL checkifsample()
+
+SA_GETSAMPLELENGTH VAR samplen
+ED_GETNUMLINES VAR blocklen
+
+len=MIN(samplen, blocklen)
+
+ED_SETDATA_UPDATE OFF
+
+oldlevel=666					/* 666 = a value out of range */
+
+DO i=0 TO len-1
+   SA_GETSAMPLE OFFSET i
+   level=(RESULT+32767)/512			/* Convert to 0-127 values */
+   level=TRUNC(level, 0)			/* remove decimals */
+   IF (level~=oldlevel) THEN			/* just edit when value changes */
+      ED_SETDATA LINE i CMDNUM X2D(cmd) CMDLVL level
+   ELSE
+      ED_SETDATA LINE i CMDNUM 0 CMDLVL 0
+   oldlevel=level
+END
+
+ED_SETDATA_UPDATE ON
+ED_SETDATA_UPDATE
+
+EXIT
+
+
+
+
+/*              P R O C E D U R E S
+-----------------------------------------------------*/
+
+checkifsample: PROCEDURE
+   IN_GETTYPE VAR type
+   IF ~(type == SAMPLE | type == SAMPLE16) THEN DO
+      WI_REQUEST '"No sample!"' '"Ok"'
+      EXIT
+   END
+return
+
+openlibs: PROCEDURE
+   IF ~SHOW(L, 'rexxsupport.library') THEN DO
+      IF ~ADDLIB('rexxsupport.library', 0, -30) THEN DO
+         SAY "Can't find rexxsupport.library"
+         CALL theend()
+      END
+   END
+RETURN
+
+theend: PROCEDURE
+   IF SHOW(L, 'rexxsupport.library') THEN DO
+      CALL REMLIB('rexxsupport.library')
+   END
+   EXIT
+RETURN

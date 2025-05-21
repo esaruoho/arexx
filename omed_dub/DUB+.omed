@@ -1,0 +1,110 @@
+/*
+    D.U.B. Plus v1.1
+    (c) Simon Speight 1996 - Freely Distributable
+
+    ARexx script FOR OctaMED v6+ which can locate and delete
+    all the unused blocks in a song.
+    See documentation for more.
+
+    $VER: DUB+.omed v1.1 (13.2.96)
+
+*/
+
+ADDRESS octamed_rexx
+OPTIONS RESULTS
+
+IF ~show(l,"rexxreqtools.library") THEN DO
+    IF ~addlib("rexxreqtools.library", 0, -30) THEN DO
+        'wi_request "Please install the rexxreqtools.library." "OK"'
+        EXIT
+    END
+END
+
+nl= '0a'x
+
+true= 1
+false= 0
+found= 0
+deleted= 0
+
+'pl_stop'
+
+ARG cli
+words = Words(cli)
+
+DO f = 1 TO words
+    IF Word(cli,f) = 'FORCE' THEN force= true
+    IF Word(cli,f) = 'SIMPLE' THEN simple= true
+END
+
+RESULT = rtezrequest('D.U.B. Plus v1.1 'nl'(c) Simon Speight 1996'nl nl'Scans song for unused blocks','_Start Scan|_Cancel','D.U.B. Plus v1.1','rtez_flags = ezreqf_centertext rt_pubscrname=OCTAMED')
+
+IF RESULT = 0 THEN EXIT
+
+'sg_ismodified'
+
+IF force = true THEN RESULT = 0
+
+IF RESULT ~=0 THEN DO
+    RESULT = rtezrequest('Current project has been changed!','_Continue|_Stop','Warning!','rtez_flags = ezreqf_centertext rt_pubscrname=OCTAMED')
+    IF RESULT = 0 THEN DO
+        exitstring= 'D.U.B. halted.'
+        CALL ex
+    END
+END
+
+'wi_showstring D.U.B. is working.  Please be patient...'
+
+'ed_gotoblock last'
+
+loop:
+'ed_getcurrblock VAR currblock'
+
+'ed_isblockinseq block' currblock
+IF RESULT = 0 THEN DO
+    found= found + 1
+    'ed_goto b='currblock' l=0'
+    IF simple~= true THEN CALL req
+    ELSE delete = true
+    IF delete = true THEN DO
+        'ed_deleteblock'
+        deleted= deleted + 1
+    END
+END
+
+IF currblock ~= 0 THEN DO
+    'ed_gotoblock prev'
+    CALL loop
+END
+
+IF found = 1 THEN exitstring= '1 unused block found - 'deleted' deleted.'
+             ELSE exitstring= found' unused blocks found - 'deleted' deleted.'
+
+CALL ex
+
+req:
+
+RESULT = rtezrequest('Block #'currblock' is not in the playing sequence.','_Play/Stop|_Delete|_Ignore|_Cancel','Block #'currblock,'rtez_flags = ezreqf_centertext rt_pubscrname=OCTAMED')
+
+IF RESULT = 0 THEN DO
+    IF found = 1 THEN exitstring= '1 block found - 'deleted' deleted:- D.U.B. Plus halted.'
+                 ELSE exitstring= found' blocks found - 'deleted' deleted:- D.U.B. Plus halted.'
+    CALL ex
+END
+
+IF RESULT = 1 THEN DO
+    'pl_playstatecommand cmd pl_stop ELSE pl_playblock'
+    CALL req
+END
+
+IF RESULT = 2 THEN delete= true
+
+IF RESULT = 3 THEN delete= false
+
+RETURN
+
+ex:
+
+'wi_showstring' exitstring
+
+EXIT

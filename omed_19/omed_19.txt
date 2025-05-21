@@ -1,0 +1,117 @@
+-------------------------------------------------------------------------------
+
+                         `19' v1.0 - by Simon Speight
+                                   (c) 1996
+
+                      **** Sound Studio compatible ****
+
+-------------------------------------------------------------------------------
+
+
+About `19'
+~~~~~~~~~~
+
+    `19' is an ARexx script for OctaMED v6 (or later, probably) that helps you
+to work out the offset you need for the 19xx command (Sample Start Offset). 
+
+    Useful as said command is (and it is!) it's a nightmare to work out what
+offset value you need - I usually end up doing some painfully boring conversions
+with a calculator - so with the arrival of OctaMED v6 with its ARexx port, I saw
+an end to all that fannying about, and `19' was born, named after the command it
+serves.
+
+
+Installation
+~~~~~~~~~~~~
+
+    Very easy - just copy the script itself ("19.omed") anywhere you like (I
+suggest that the Rexx drawer inside the main OctaMED drawer is the best place),
+and then set up a keyboard shortcut (from the Settings/Keyboard Shortcuts menu)
+for it.  Now you're ready to go!
+
+
+Usage
+~~~~~
+
+Command line usage:
+
+RX 19.omed [REQ]
+
+    Making sure that you have a sample loaded (`19' will complain if you
+haven't!), open the Sample Editor, and mark a range that starts at the point in
+the sample that you are interested in - this is useful as it allows you to hear
+that you have it in the right place.  Now, run the script (using whatever
+shortcut you have assigned to it) and it will convert the position of the start
+of your range into a value for the 19xx command.
+
+    By default, `19' will report this value to the title bar of the OctaMED
+screen - if you prefer it (as I do) to appear in a requester, then supply the
+REQ argument to the script (and yes, arguments do work in the Keyboard Shortcuts
+editor).
+
+    There are a few things to note about using `19':
+
+- if, when you try out the value `19' gives you, it doesn't sound quite right,
+try adjusting it one either way.  The reason for this uncertainty is because the
+19xx command is only accurate to 256 bytes - that is, for every one you add to
+the value, you are moving 256 bytes along the sample.  Because of this, `19' has
+to perform a certain amount of rounding to get to its final figure, and it may
+not sound EXACTLY as you marked it in the sample editor (though it won't be much
+different).
+
+- there are a few things that will cause `19' to complain.  These are: not
+having a sample loaded, not having a range set (or rather, having the Range
+Start and Range End both set to 0), trying to use it on the wrong type of
+instrument, & having a sample of less than 256 bytes loaded (not much point, is
+there?).  If any of these are true, `19' brings up a requester, telling you, and
+exits.
+
+    And that's all there is to it...
+
+
+Credits and Thanks
+~~~~~~~~~~~~~~~~~~
+
+Thanks to Teijo Kinnunen & Ray Burt-Frost for the monster of a program that is
+OctaMED v6, and for giving me an ARexx port to play with! :-)
+
+Thanks to Dan Brooke, Andy Dowds and Alistair Knock for answering my (sometimes
+blindingly obvious!) questions about ARexx.
+
+Everything else by me :-)
+
+
+Legal
+~~~~~
+
+    This is complete Freeware - copy it and spread it to your heart's content. 
+I do ask that you leave the archive exactly as it is though - no removal,
+addition or alteration of data (not including archiving method).
+
+    RBF Software have permission to include this with future releases of
+OctaMED free of charge, should they wish to do so.
+
+    Not that there's really much call for this with this script, but there is
+ABSOLUTELY NO WARRANTY with this script.  I have tested it to the best of my
+abilities, but I will accept no responsibility for any damage resulting from its
+use.  By executing the script you indicate your acceptance of these terms.
+
+
+Contact
+~~~~~~~
+
+    I would appreciate it, if you find this script useful, if you would drop me
+a line and let me know.  I can be found at the following addresses (in order of
+preference);
+
+    simons@telecall.co.uk
+    2:255/110.7@fidonet
+    39:137/12.34@amiganet
+
+
+    Please feel free to contact me if you find any bugs in `19', or if you have
+any suggestions regarding `19', or any other script you would like to see
+written - I guarantee that all suggestions will be considered.
+
+
+That's all folks - see yaz.  Simon...

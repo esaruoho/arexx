@@ -1,0 +1,112 @@
+/*
+	ARexx script for use with PlotCMD
+	(PlotCMD is a MUIRexx script for use with OctaMED Soundstudio)
+	Read the PlotCMD doc for details
+*/
+
+ADDRESS OCTAMED_REXX
+OPTIONS RESULTS
+
+WI_REQUEST '"Data format?"' '"0-40|0-7F|0-FF|80-0-7F"' VAR form
+
+ED_GETNUMLINES VAR len
+
+SELECT
+   WHEN (form==1) THEN CALL testform(len, '40'x)	/* check level ranges */
+   WHEN (form==2) THEN CALL testform(len, '7F'x)
+   OTHERWISE
+END
+
+IN_SELECT LAST
+IN_SETTYPE SAMPLE
+SA_CHANGESIZE SIZE len CLEAR
+
+SELECT
+   WHEN (form==1) THEN CALL applyform1(len)
+   WHEN (form==2) THEN CALL applyform2(len)
+   WHEN (form==3) THEN CALL applyform3(len)
+   WHEN (form==0) THEN CALL applyform4(len)
+   OTHERWISE
+END
+
+SA_REFRESH
+
+EXIT
+
+
+
+
+/*              P R O C E D U R E S
+-----------------------------------------------------*/
+
+testform: PROCEDURE
+   len=ARG(1)
+   max=c2d(ARG(2))
+   DO i=0 TO len-1
+      ED_GETDATA LINE i CMDLVL
+      IF (RESULT>max) THEN DO
+         WI_REQUEST '"CMD levels out of range!"' '"OK"'
+         EXIT
+      END
+   END
+return
+
+applyform1: PROCEDURE
+   PARSE ARG len
+   DO i=0 TO len-1
+      ED_GETDATA LINE i CMDLVL
+      calcval=1023*RESULT-32736
+      SA_SETSAMPLE OFFSET i VALUE calcval
+   END
+return
+
+applyform2: PROCEDURE
+   PARSE ARG len
+   oldval=-32767
+
+   DO i=0 TO len-1
+      ED_GETDATA LINE i CMDLVL ; level=RESULT
+      ED_GETDATA LINE i CMDNUM ; nr=RESULT
+      IF (level==0 & nr==0) THEN
+         calcval=oldval				/* 0000 detected => use last value */
+      ELSE
+         calcval=511*level-32193
+      SA_SETSAMPLE OFFSET i VALUE calcval
+      oldval=calcval
+   END
+return
+
+applyform3: PROCEDURE
+   PARSE ARG len
+   oldval=-32767
+
+   DO i=0 TO len-1
+      ED_GETDATA LINE i CMDLVL ; level=RESULT
+      ED_GETDATA LINE i CMDNUM ; nr=RESULT
+      IF (level==0 & nr==0) THEN
+         calcval=oldval				/* 0000 detected => use last value */
+      ELSE
+         calcval=255*level-32640
+      SA_SETSAMPLE OFFSET i VALUE calcval
+      oldval=calcval
+   END
+return
+
+applyform4: PROCEDURE		/* (signed values) */
+   PARSE ARG len
+   oldval=0
+
+   DO i=0 TO len-1
+      ED_GETDATA LINE i CMDLVL ; level=RESULT
+      ED_GETDATA LINE i CMDNUM ; nr=RESULT
+      IF (level==0 & nr==0) THEN
+         calcval=oldval				/* 0000 detected => use last value */
+      ELSE
+         IF (level<128) THEN			/*  0 - 7F <=>  0 -  127 */
+            calcval=256*level
+         ELSE					/* FF - 80 <=> -1 - -128 */
+            calcval=256*level-2*32767
+      SA_SETSAMPLE OFFSET i VALUE calcval
+      oldval=calcval
+   END
+return

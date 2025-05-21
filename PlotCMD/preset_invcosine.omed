@@ -1,0 +1,50 @@
+/*
+	ARexx script for use with PlotCMD
+	(PlotCMD is a MUIRexx script for use with OctaMED Soundstudio)
+	Read the PlotCMD doc for details
+*/
+
+ADDRESS OCTAMED_REXX
+OPTIONS RESULTS
+
+CALL openlibs()
+
+pi=4*ATan(1)				/* Define Pi */
+
+ED_GETNUMLINES VAR len
+IN_SELECT LAST
+IN_SETTYPE SAMPLE
+SA_CHANGESIZE SIZE len CLEAR
+
+DO i=0 TO len-1
+   calcval=-32767*COS(i/(len-1)*2*pi)	/* calculate COSINE values */
+   calcval=TRUNC(calcval, 0)		/* remove decimals */
+   SA_SETSAMPLE OFFSET i VALUE calcval	/* edit sample */
+END
+
+SA_REFRESH
+
+CALL theend()
+
+
+
+
+
+/*              P R O C E D U R E S
+-----------------------------------------------------*/
+
+openlibs: PROCEDURE
+   IF ~SHOW(L, 'rexxMOOS.library') THEN DO
+      IF ~ADDLIB('rexxMOOS.library', 100, -30) THEN DO
+         SAY "Can't find rexxMOOS.library"
+         CALL theend()
+      END
+   END
+RETURN
+
+theend: PROCEDURE
+   IF SHOW(L, 'rexxMOOS.library') THEN DO
+      CALL REMLIB('rexxMOOS.library')
+   END
+   EXIT
+RETURN

@@ -1,0 +1,43 @@
+/*
+    Sizes v1.0
+    (c) Simon Speight 1996 - Freely Distributable
+
+    ARexx script for OctaMED v6+ that tells you the size of
+    your current project in any format.
+
+    $VER: Sizes.omed v1.0 (5.2.96)
+
+*/
+
+nl= '0a'x
+
+ADDRESS octamed_rexx
+OPTIONS RESULTS
+
+IF ~show(l,"rexxreqtools.library") THEN DO
+    IF ~addlib("rexxreqtools.library", 0, -30) THEN DO
+        'wi_request "Please install the rexxreqtools.library." "OK"'
+        EXIT
+    END
+END
+
+ARG cli
+
+type= cli
+
+IF (cli ~= 'SMF0') & (cli ~='MMD0') & (cli ~= 'MMD1') & (cli ~= 'MMD2') THEN DO
+    RESULT = rtezrequest('Sizes v1.0 'nl'(c) Simon Speight 1996'nl nl'Choose a format','S_MF0|MMD_0|MMD_1|MMD_2|_Cancel','Choose a format','rtez_flags = ezreqf_centertext|ezreqf_noreturnkey rt_pubscrname=OCTAMED')
+    SELECT
+        WHEN RESULT = 1 THEN type= 'SMF0'
+        WHEN RESULT = 2 THEN type= 'MMD0'
+        WHEN RESULT = 3 THEN type= 'MMD1'
+        WHEN RESULT = 4 THEN type= 'MMD2'
+        OTHERWISE EXIT
+    END
+END
+
+'sg_getfilesize 'type' currsong VAR currsong'
+'sg_getfilesize 'type' multimod VAR multimod'
+
+RESULT = rtezrequest('Sizes v1.0'nl '(c) Simon Speight 1996'nl nl'Format: 'type nl nl'Current Song:'nl currsong' bytes' nl nl'Multi-Module:'nl multimod' bytes' nl,'_Thanks','File sizes in 'type' format','rtez_flags = ezreqf_centertext rt_pubscrname=OCTAMED')
+

@@ -1,0 +1,23 @@
+/*
+	ARexx script for use with PlotCMD
+	(PlotCMD is a MUIRexx script for use with OctaMED Soundstudio)
+	Read the PlotCMD doc for details
+*/
+
+ADDRESS OCTAMED_REXX
+OPTIONS RESULTS
+
+ED_GETNUMLINES VAR len
+IN_SELECT LAST
+IN_SETTYPE SAMPLE
+SA_CHANGESIZE SIZE len CLEAR
+
+DO i=0 TO len-1
+   calcval=2*32767*(1-i/(len-1))-32767	/* calculate value */
+   calcval=TRUNC(calcval, 0)		/* remove decimals */
+   SA_SETSAMPLE OFFSET i VALUE calcval	/* edit sample */
+END
+
+SA_REFRESH
+
+EXIT

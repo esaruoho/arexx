@@ -1,0 +1,135 @@
+-------------------------------------------------------------------------------
+
+                            Sizes - by Simon Speight
+                                    (c) 1996
+
+                      **** Sound Studio compatible ****
+
+-------------------------------------------------------------------------------
+
+
+About Sizes
+~~~~~~~~~~~
+
+    The one thing I missed when I moved from Protracker to OctaMED, was a little
+gauge telling you how much memory the tune was currently taking up.  So when
+OctaMED v6 arrived with ARexx, I got to work!
+
+    And that's all this script does - tell you how big your current project is.
+
+
+Requirements
+~~~~~~~~~~~~
+
+    In order to make this script easier to use, and nicer to look at, it uses
+some functions of the RexxReqTools package.  As a result, you'll need the
+following libraries in LIBS:
+    - rexxreqtools.library (used by the script)
+    - reqtools.library (required by RexxReqTools)
+    - rexxsyslib.library (required by RexxReqTools)
+    - diskfont.library (required by RexxReqTools)
+
+    You should already have rexxsyslib.library and diskfont.library as the
+former comes with ARexx, and the latter with Workbench.
+
+    If you haven't got ReqTools installed WHY NOT?!?
+
+    RexxReqTools can be obtained from any Aminet site as
+/util/rexx/RexxReqTools.lha
+
+
+Installation
+~~~~~~~~~~~~
+
+    Assuming you have the files mentioned above in the right place, then it
+simply remains to do the following;
+
+- copy the file "Sizes.omed" into a directory of your choice (I recommend the
+Rexx drawer inside the main OctaMED drawer)
+
+- set up a keyboard shortcut (Settings/Keyboard Shortcuts) for this script
+(remembering to also include any argument you need - see Usage)
+
+
+Usage
+~~~~~
+
+Command line usage:
+
+RX Sizes.omed [MMD0|MMD1|MMD2|SMF0]
+
+    By default (ie, running the script with no arguments), you will be presented
+with a requester, asking you to choose a file format (if you are unsure as to
+the differences between the formats, please check your OctaMED manual).  Once
+selected another requester will appear telling you what size your current song
+would be, and what size all the songs in your current project would be, if saved
+out in the selected format.  Simply press <Return> or <t> to close the requester.
+
+    I would imagine that most people (like myself) save out 99% of the time in
+the same format.  Therefore, to save going through the laborious task of
+selecting that format every time, simply supply the format as an argument to the
+script (accepted arguments being "SMF0", "MMD0", "MMD1", and "MMD2" (case
+independant, but without speech marks)) and you can skip the initial requester.
+
+
+Why use RexxReqTools?
+~~~~~~~~~~~~~~~~~~~~~
+
+    Some people are bound to wonder why such a simple script uses an external
+library.  The answer is simple: OctaMED's built in requesters are fine for
+simple messages, but try to display some information and it gets messy. 
+RexxReqTools provides many useful features, not least of which being some form
+of text formatting, makes it easier to use for the user by way of keyboard
+shortcuts for all gadgets, and its only 11k...
+
+
+Credits & Thanks
+~~~~~~~~~~~~~~~~
+
+Thanks to:
+
+- Teijo Kinnunen & Ray Burt-Frost for the almighty OctaMED!
+
+- Rafael D'Halleweyn for the superb RexxReqTools package (and Nico François for
+ReqTools in the first place!).
+
+- Dan Brooke & Alistair Knock for answering my questions about ARexx, and
+managing to come up with different answers :-)
+
+Concept and all coding by me!
+
+
+Legal
+~~~~~
+
+    This archive (containing the script and this doc file) may be freely
+distributed providing it is kept in its original form (that means no addition,
+removal or alteration of data) (not including archiving method), and that no
+money be charged for obtaining it.
+
+    RBF Software may distribute this with future releases of OctaMED completely
+free of charge.
+
+    I have tested this script to the best of my abilities, but I make no
+guarantees as to its reliability.  I will accept no responsibility for any
+damage or loss of data resulting from the use of this script.  By executing the
+script, you show your acceptance of these terms.
+
+
+Contact
+~~~~~~~
+
+    I would appreciate it, if you find this script useful, if you would drop me
+a line and let me know.  I can be found at the following addresses;
+
+    simons@telecall.co.uk
+    2:259/66.34@fidonet
+    39:137/12.34@amiganet
+
+
+    Please feel free to contact me if you find any bugs in Sizes, or if you have
+any suggestions regarding Sizes, or any other script you would like to see
+written - I guarantee that all suggestions will be considered.
+
+
+"Th-th-th th-that's all folks!"  Simon...

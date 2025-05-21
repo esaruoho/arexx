@@ -1,0 +1,156 @@
+-------------------------------------------------------------------------------
+
+                       Infoissimo v1.1 - by Simon Speight
+                                    (c) 1996
+
+                      **** Sound Studio compatible ****
+
+-------------------------------------------------------------------------------
+
+
+About Infoissimo
+~~~~~~~~~~~~~~~~
+
+    If you think about it, there is an awful lot of information contained in a
+module besides the actual tune itself.  Now, you could go trawling through the
+various parts of OctaMED to go get it all, but how much nicer it would be if
+some kind soul would write a script to bring together all that information for
+you, wouldn't it?  If you've ever thought this, I'm about to make your day,
+because Infoissmo (Info for short) is an ARexx script for OctaMED v6 and higher
+that does just that.
+
+
+Requirements
+~~~~~~~~~~~~
+
+    In order to make writing AND using Infoissimo a nicer experience, I have
+used some functions of the (frankly excellent) RexxReqTools package.  As a
+result of this, you will need the following files in LIBS:
+
+rexxreqtools.library, reqtools.library, diskfont.library, rexxsyslib.library
+
+    The last three of those shouldn't be a problem - diskfont.library comes with
+Workbench, rexxsyslib.library comes with ARexx, and has anybody NOT got
+reqtools.library?
+
+    If you do not have rexxreqtools.library, then the distribution can be found
+on the Aminet as /util/rexx/RexxReqTools.lha.
+
+
+Installation
+~~~~~~~~~~~~
+
+    Assuming you have the files mentioned above in the right place, it just
+remains to do the following;
+
+- copy the file Info.omed to a directory of your choice (I recommend the Rexx
+drawer within the main OctaMED drawer).
+
+- set up a keyboard shortcut (Settings/Keyboard Shortcuts) for the script.
+
+    Now you're ready to go.
+
+
+Usage
+~~~~~
+
+    When you start the script, there will be a short pause before the first
+requester appears - this is Infoissimo gathering all its information.  Be
+patient - it only happens once.
+
+    The first thing you'll see is the introductory requester - this just
+summarises what the script does, and presents you with some gadgets.  Each of
+these (except Cancel, obviously) represents a category about which you can see
+some information.  These can be selected by clicking the gadgets, or pressing
+the key corresponding to the underlined letter in any gadget.
+
+    The categories are fairly self-explanatory, but I'll just give you an idea
+of what each one covers;
+
+OctaMED     : version information about your OctaMED, and its ARexx implementation.
+
+Song        : current song title, channel mode, song number, total number of
+              songs, file size (see SPECIAL NOTE below), tempo, number of blocks
+              and number of unused blocks.
+
+Section     : current section name, number, and total number of sections.
+
+Instruments : the number of instruments split into different types (sample,
+              synth, etc).
+
+Annotation  : the current (short) annotation string.
+
+(If you are unsure what any of these are, or what some of the values/acronyms
+used in the Infoissimo requesters are, check your manual before asking me!)
+
+    Each of the categories has its own requester, and each requester has the
+same gadgets on it, so every category can be accessed from every other.
+
+    And that's all there is to it.
+
+
+** SPECIAL NOTE **: Since the same song in different formats are different
+sizes, I really need to know the format before working out the file size.  By
+default, the file size in the "Song" requester will tell you the size of just
+the current song (as opposed to a Multi-Module) in MMD1 format.  If you wish to 
+change this, then load the script into a text editor and look near the top of the
+script for two variables together called "format" and "type" (they are
+accompanied by a comment):
+
+"format" is the format of the project itself - this can be either MMD0, MMD1, MMD2
+or SMF0 (you should see that its currently set to MMD1).
+
+"type" is the type of project.  It is currently set to "CURRSONG" which means it
+will tell you the size of just the CURRent SONG.  If you wish this to display
+the size of ALL songs in the current project, change this from "CURRSONG" to
+"MULTIMOD".
+
+
+Credits & Thanks
+~~~~~~~~~~~~~~~~
+
+- Teijo Kinnunen & Ray Burt-Frost for the fabulous OctaMED!
+
+- Rafael D'Halleweyn for the RexxReqTools package, and Nico François for
+creating ReqTools at all!
+
+[Want to see your name here?  If you can think of a feature you'd like to see in
+Infoissimo, contact me (see below) and if it gets put in, your name goes on this
+list! :-) ]
+
+
+Legal
+~~~~~
+
+    This archive (containing the script and this doc file) may be freely
+distributed providing it is kept in its original form (that means no addition,
+removal or alteration of data - not including archiving method), and that NO
+money be charged for obtaining it.
+
+    RBF Software may distribute this with future releases of OctaMED completely
+free of charge, should they wish to do so.
+
+    I have tested this script to the best of my abilities, but I make no
+guarantees as to its reliability.  I will accept no responsibility for any
+damage or loss of data resulting from the use of this script.  By executing the
+script, you show your acceptance of these terms.
+
+
+Contact
+~~~~~~~
+
+    I would appreciate it, if you find this script useful, if you would drop me
+a line and let me know.  I can be found at the following addresses (in order of
+preference);
+
+    simons@telecall.co.uk
+    2:259/66.34@fidonet
+    39:137/12.34@amiganet
+
+
+    Please feel free to contact me if you find any bugs in Infoissimo, or if you
+have any suggestions regarding Infoissimo, or any other script you would like to
+see written - I guarantee that all suggestions will be considered.
+
+
+"Das ist alles."  Simon...
