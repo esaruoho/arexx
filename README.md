@@ -78,9 +78,59 @@ versions as well).
 Made in August 1999 by Johan Persson. Contact me for
 anything at fash@swipnet.se
 ```
+and
+```
+-------------------------------------------------------------------------
+                "Project Info" v1.0 - documentation
+-------------------------------------------------------------------------
+
+ARexx script for use with OctaMED.
+
+This is one of my first encounters with ARexx, so it's really lousy
+written. It works fine for me though...
 
 
+-------------------------------------------------------------------------
+                              Features
+-------------------------------------------------------------------------
+  displays...
 
+- Module status (saved/unsaved)
+- Tempo (BPM)
+- Estimated time (only works if speed is set to '3' and all blocks
+                  have a length of 64 lines, but still gives an idea
+                  of the actual song length)
+- Nr. of unused blocks
+- Nr. of 8-bit samples used
+- Nr. of 16-bit samples used
+- Nr. of MIDI instruments used
+- Nr. of times each MIDI channel (1-16) has been used
+
++ Button to delete unused blocks (all/defined)
+
+I also wanted to display the module length (in bytes), but this is not
+possible due to a bug in OctaMED. Executing ARexx command
+SG_GETFILESIZE returns the file size, but also makes OctaMED believe
+that the current module has been saved.
+
+-------------------------------------------------------------------------
+                             Requirements
+-------------------------------------------------------------------------
+
+- Tested with OctaMED Soundstudio v1.03c (ARexx v3), might work
+  with OctaMED v6 too.
+- Rexxreqtools.library (available on Aminet...)
+
+
+-------------------------------------------------------------------------
+                                Author
+-------------------------------------------------------------------------
+
+Johan Persson
+
+planet4@swipnet.se
+http://home6.swipnet.se/~w-68753/johan.html
+```
 
 ### 8med.lha
 Source: https://aminet.net/package/util/rexx/8med
