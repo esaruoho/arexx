@@ -1,0 +1,11 @@
+/* instrument volume up - (C) 1996 Fred Brooker */
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+address OCTAMED_REXX
+options results
+wi_open instparams
+wi_activate instparams
+in_getvolume var VOL
+if VOL<64 then
+  in_setvolume VOL+1

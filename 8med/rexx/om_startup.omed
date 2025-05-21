@@ -1,0 +1,106 @@
+/* OctaMED v6.0 REXX custom startup, (C) 1996 Fred Brooker
+
+Features:
+
+- sets some variables
+- creates a general instrument MIDI map
+
+   Version: 1.2, 12/02/1996, spread as you like, modify, credit me :) */
+
+
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+address OCTAMED_REXX
+options results
+wi_octamedtofront
+op_set midiactive on
+op_set edit on
+op_set midiactsensing on
+op_set followseq on
+op_set autofreeze on
+op_set polyplay on
+op_set spaceisdel off
+op_set autoflush off
+op_set autoterminate off
+sg_setvolmode dec
+op_set defvolmode 0
+ed_setblocktracks 64
+ed_setblocklines  32
+sg_setsavepath '"MIDI-SONGS:"'
+sg_setslidemode std
+
+in_select 1
+in_setvolume 64
+in_setmidichannel 9
+in_setsuppressnoteoff off
+in_setname '"YAMAHA DX-7 IID / voice A"'
+
+in_select 2
+in_setvolume 64
+in_setmidichannel 11
+in_setsuppressnoteoff off
+in_setname '"YAMAHA DX-7 IID / voice B"'
+
+in_select 3
+in_setvolume 64
+in_setsuppressnoteoff off
+in_setmidichannel 1
+in_setname '"KAWAI K4 / voice 1"'
+
+in_select 4
+in_setvolume 64
+in_setsuppressnoteoff off
+in_setmidichannel 2
+in_setname '"KAWAI K4 / voice 2"'
+
+in_select 5
+in_setvolume 64
+in_setsuppressnoteoff off
+in_setmidichannel 3
+in_setname '"KAWAI K4 / voice 3"'
+
+in_select 6
+in_setvolume 64
+in_setsuppressnoteoff off
+in_setmidichannel 4
+in_setname '"KAWAI K4 / voice 4"'
+
+in_select 7
+in_setvolume 64
+in_setsuppressnoteoff off
+in_setmidichannel 5
+in_setname '"KAWAI K4 / voice 5"'
+
+in_select 8
+in_setvolume 64
+in_setsuppressnoteoff off
+in_setmidichannel 6
+in_setname '"KAWAI K4 / voice 6"'
+
+in_select 9
+in_setvolume 64
+in_setsuppressnoteoff off
+in_setmidichannel 7
+in_setname '"KAWAI K4 / voice 7"'
+
+in_select 10
+in_setvolume 64
+in_setsuppressnoteoff off
+in_setmidichannel 8
+in_setname '"KAWAI K4 / voice 8"'
+
+in_select 11
+in_setvolume 64
+in_setsuppressnoteoff on
+in_setmidichannel 10
+in_setname '"KAWAI K4 / drums section"'
+
+pl_resetmidi
+in_select 1
+wi_open midiinputchannel
+wi_changebox midiinputchannel 370 27
+wi_activate midiinputchannel
+op_update on
+op_set midiinput on
+wi_showstring 'Ahoj Frede! Jak se vede? =:^)'

@@ -1,0 +1,39 @@
+/* Settrax, (C) 1996 Fred Brooker
+
+Features:
+
+- expands the range to cover all the lines in the current block
+
+   Version: 1.0, 10/02/1996, spread as you like, modify, credit me :) */
+
+
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+address OCTAMED_REXX
+options results
+COPY=0
+rn_isranged
+if result == 0 then
+do
+  rn_setrange currblock
+  wi_showstring '[SET TRAX] Set a range, at least a single note!'
+  exit
+end
+ed_getnumlines var NL
+rn_getrangestartline var SL
+rn_getrangeendline var EL
+rn_getrangestarttrack var ST
+rn_getrangeendtrack var ET
+if SL==0 then
+do
+  if EL==(NL-1) then
+  do
+    rn_copy range
+    wi_showstring "[SET TRAX] Range copied."
+    COPY=1
+  end
+end
+rn_setrange ST 0 ET NL-1
+if COPY==0 then
+  wi_showstring "[SET TRAX]" ET-ST+1 "trax ranged."

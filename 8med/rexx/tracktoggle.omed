@@ -1,0 +1,9 @@
+/* toggles track (C) 1996 Fred Brooker */
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+address OCTAMED_REXX
+options results
+
+ed_getcurrtrack var curr
+'sg_settrackstate trk=' curr 'toggle'

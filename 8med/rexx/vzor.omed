@@ -1,0 +1,7 @@
+/*  */
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+address OCTAMED_REXX
+options results
+

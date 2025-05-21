@@ -1,0 +1,16 @@
+    Device = mfm.device
+    Unit = 0
+    Flags = 1
+    Surfaces = 2
+    BlocksPerTrack = 9
+    LowCyl = 0
+    HighCyl = 79
+
+    FileSystem = L:CrossDOSFileSystem
+    Stacksize = 2000
+    Priority = 5
+    GlobVec = -1
+    DosType = 0x4D534400
+    Buffers = 5
+    BufMemType = 0 
+    Activate = 1

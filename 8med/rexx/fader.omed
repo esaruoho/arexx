@@ -1,0 +1,104 @@
+/* Fader - recounts volume in a range, (C) 1996 Fred Brooker
+
+Features:
+
+- in a range recounts volumes based on the 'C??' volumes in the
+  current track (make a slide in one track, then select a range,
+  move cursor to the 'slide track' and process)
+
+- the range is copied to the internal buffer first for undo reasons
+
+- gets default instrument volume to recount notes without 'C??'
+
+- removes notes with 'C00'
+
+- useful to fade echoed sequences
+
+   Version: 1.1, 11/02/1996, spread as you like, modify, credit me :) */
+
+
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+address OCTAMED_REXX
+options results
+in_getnumber NUMBER /* storing current instrument number */
+ed_getcurrtrack var CT
+rn_isranged
+if result == 0 then
+do
+  ed_getnumlines var NL
+  rn_setrange CT 0 CT NL
+  wi_showstring '[FADER] Set a range, at least a single note! (track has been set)'
+  exit
+end
+rn_getrangestarttrack var ST
+rn_getrangeendtrack var ET
+rn_getrangestartline var SL
+rn_getrangeendline var EL
+rn_copy range
+rn_setrange ST SL ET EL
+if CT-1 < ET then
+do
+  if CT+1 > ST then
+  do
+    wi_showstring "[FADER] Let the cursor stay outside the current range!"
+    exit
+  end
+end
+wi_request '"Wanna FADE this range?"' '"Yes, FADE it.|Cancel!"'
+if result==0 then
+ exit
+wi_showstring "[FADER] Computing volume commands..."
+op_update off
+do lcounter=SL to EL
+  do tcounter=ST to ET
+    'ed_getdata T=' tcounter ' L=' lcounter ' CMDNUM'
+    if result == 12 then  /* this is a C?? primary command */
+    do
+      'ed_getdata T=' CT ' L=' lcounter ' CMDNUM'
+      if result == 12 then  /* this is a C?? secondary mask */
+      do
+        'ed_getdata T=' CT ' L=' lcounter ' QUAL'
+        DATA=d2x(result) /* getting secondary volume */
+        'ed_getdata T=' tcounter ' L=' lcounter ' QUAL'
+        DATA2=d2x(result)  /* getting primary volume */
+        DATA3=x2d(trunc((DATA2 * DATA) / 64))
+        if DATA3==0 then
+        do
+          'ed_setdata T=' tcounter ' L=' lcounter ' NOTE=0 CMDNUM=0 INUM=0 QUAL=0'
+        end
+        else 'ed_setdata T=' tcounter ' L=' lcounter ' QUAL=' DATA3
+      end
+    end
+    else  /* now process notes with default volume only */
+    do
+      'ed_getdata T=' tcounter ' L=' lcounter ' NOTE'
+      if result>0 then  /* yeah, there's a note */
+      do
+        'ed_getdata T=' tcounter ' L=' lcounter ' INUM'
+        INSTR=result  /* now we have an instrument number */
+        if INSTR>0 then
+        do
+          'ed_getdata T=' CT ' L=' lcounter ' CMDNUM'
+          if result == 12 then  /* again checking for secondary C?? */
+          do
+            'ed_getdata T=' CT ' L=' lcounter ' QUAL'
+            DATA=d2x(result) /* secondary volume */
+            in_select INSTR
+            in_getvolume var DATA2  /* primary volume */
+            DATA3=x2d(trunc((DATA2 * DATA) / 64))
+            if DATA3==0 then
+            do
+              'ed_setdata T=' tcounter ' L=' lcounter ' NOTE=0 CMDNUM=0 INUM=0 QUAL=0'
+            end
+            else 'ed_setdata T=' tcounter ' L=' lcounter ' CMDNUM=12 QUAL=' DATA3
+          end
+        end
+      end
+    end
+  end
+end
+op_update on
+in_select NUMBER  /* setting back an old instrument number */
+wi_showstring '[FADER] Done. Original range is in the copy buffer.'

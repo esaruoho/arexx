@@ -1,0 +1,74 @@
+/* Recursive mixer, (C) 1996 Fred Brooker
+
+Features:
+
+- mixes tracks in a range to the track leftside the range
+- useful when you wanna join some tracks and get a free space
+- recursive (works right to left, so makes more transfers than left to right)
+
+   Version 1.1, 11/02/1996, spread as you like, modify, credit me :) */
+
+
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+address OCTAMED_REXX
+options results
+FORCE=0
+rn_isranged
+if result == 0 then
+do
+  wi_showstring "[TRAX MIXER] Can't MIX until you set a range... ;)"
+  exit
+end
+else
+do
+  rn_getrangestartline var SL
+  rn_getrangeendline var EL
+  rn_getrangestarttrack var ST
+  rn_getrangeendtrack var ET
+  if ST == 0 then
+  do
+    if ET == 0 then
+    do
+      wi_request '"[TRAX MIXER] There is NO FREE TRACK leftside to the range!"' '"I know..."'
+      exit
+    end
+    wi_request '"[TRAX MIXER] There is NO FREE TRACK leftside to the range!"' '"Mix to the first track!|Cancel!"'
+    if result == 0 then
+      exit
+    ST=1
+    FORCE=1
+  end
+  if FORCE == 0 then
+  do
+    wi_request '"[TRAX MIXER] Do ya want to MIX this range?"' '"Yeah, MIX it!|Cancel!"'
+    if result == 0 then
+      exit
+  end
+  do tcounter=ET to ST by -1
+  op_update on
+  wi_showstring "[TRAX MIXER] Working on track #" tcounter "..."
+  op_update off
+  do lcounter=SL to EL
+    'ed_getdata note L=' lcounter ' T=' tcounter ' var NOTE1'
+    'ed_getdata inum L=' lcounter ' T=' tcounter ' var INUM1'
+    'ed_getdata cmdnum L=' lcounter ' T=' tcounter ' var CMDNUM1'
+    'ed_getdata qual L=' lcounter ' T=' tcounter ' var QUAL1'
+    if ( NOTE1 + INUM1 + CMDNUM1 + QUAL1 ) > 0 then
+    do
+      'ed_getdata note L=' lcounter ' T=' tcounter - 1 ' var NOTE2'
+      'ed_getdata inum L=' lcounter ' T=' tcounter - 1 ' var INUM2'
+      'ed_getdata cmdnum L=' lcounter ' T=' tcounter - 1 ' var CMDNUM2'
+      'ed_getdata qual L=' lcounter ' T=' tcounter - 1 ' var QUAL2'
+      if ( NOTE2 + INUM2 + CMDNUM2 + QUAL2 ) == 0 then
+      do
+        'ed_setdata L=' lcounter ' T=' tcounter - 1 ' note ' NOTE1 ' inum ' INUM1 ' cmdnum ' CMDNUM1 ' qual ' QUAL1
+        'ed_setdata L=' lcounter ' T=' tcounter ' note 0 inum 0 cmdnum 0 qual 0'
+      end
+    end
+  end
+
+  op_update on
+  wi_showstring "[TRAX MIXER] Done."
+end

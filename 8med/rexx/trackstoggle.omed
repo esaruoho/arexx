@@ -1,0 +1,15 @@
+/* toggles all tracks (C) 1996 Fred Brooker */
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+address OCTAMED_REXX
+options results
+
+ed_getnumtracks var curr
+wi_showstring "Toggling track states..."
+op_update off
+do c=0 to curr-1
+  'sg_settrackstate trk=' c 'toggle'
+end
+op_update on
+wi_showstring "Done."

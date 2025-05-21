@@ -1,0 +1,42 @@
+ram:
+assign ENV: ram:
+assign T: ram:
+assign PROGDIR: SYS:
+assign LOCALE: SYS:
+assign rexx: ram:
+assign !: SYS:rexx/
+addbuffers >NIL: df0: 50
+addbuffers >NIL: df1: 50
+config CTRLKEYS WQSEIX[TYHKJLRV
+FLAGS PIPE OFF
+border on -1
+path SYS:c
+setpatchmrgcop
+path SYS:rexxc 
+ppatch >NIL:
+setmap mymap
+copy >NIL: SYS:reqtools.prefs env:
+taskpri 1
+rtpatch >NIL:
+config hide *.info
+config colour 01233321
+config fncsize 10000
+delete >NIL: -Q RAM:reqtools.prefs
+prompt "^*2m^*0m%p (%l) Shell > "
+menustay >NIL:
+wait 1
+mightymouse
+;mmbshift >NIL:
+wait 1
+rexxmast >NIL:
+copy >NIL: !:#?.omed ram: 
+SYS:
+run SYS:octamed
+ram:
+echo "^*2m^*0m"
+review 10000
+review C
+echo ^J
+avail
+echo ^J
+alias 8med "sys:;run octamed;ram:"

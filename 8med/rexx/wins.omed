@@ -1,0 +1,375 @@
+/* Close all wins / open standard ones, (C) 1996 Fred Brooker
+
+Features:
+
+* closes opened windows (except maincontrol), shows memory available
+* if opened windows are not found, opens standard ones
+
+   Version: 1.1, 11/02/1996, spread as you like, modify, credit me :) */
+
+
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+address OCTAMED_REXX
+options results
+OPEN=1
+wi_showstring '[WINDOWS CONTROLLER] Working...'
+wi_isopen eqosc
+if result == 1 then
+do
+  OPEN=0
+  wi_close eqosc
+end
+wi_isopen information
+if result == 1 then
+do
+  OPEN=0
+  wi_close information
+end
+wi_isopen inputmap
+if result == 1 then
+do
+  OPEN=0
+  wi_close inputmap
+end
+wi_isopen auraoptions
+if result == 1 then
+do
+  OPEN=0
+  wi_close auraoptions
+end
+wi_isopen spreadnotes
+if result == 1 then
+do
+  OPEN=0
+  wi_close spreadnotes
+end
+wi_isopen mouseoptions
+if result == 1 then
+do
+  OPEN=0
+  wi_close mouseoptions
+end
+wi_isopen playingseq
+if result == 1 then
+do
+  OPEN=0
+  wi_close playingseq
+end
+wi_isopen samplelist
+if result == 1 then
+do
+  OPEN=0
+  wi_close samplelist
+end
+wi_isopen save_ppsettings
+if result == 1 then
+do
+  OPEN=0
+  wi_close save_ppsettings
+end
+wi_isopen sa_changepitch
+if result == 1 then
+do
+  OPEN=0
+  wi_close sa_changepitch
+end
+wi_isopen sa_displaysettings
+if result == 1 then
+do
+  OPEN=0
+  wi_close sa_displaysettings
+end
+wi_isopen sectionlist
+if result == 1 then
+do
+  OPEN=0
+  wi_close sectionlist
+end
+wi_isopen songselect
+if result == 1 then
+do
+  OPEN=0
+  wi_close songselect
+end
+wi_isopen sy_stretch
+if result == 1 then
+do
+  OPEN=0
+  wi_close sy_stretch
+end
+wi_isopen toccata_capture
+if result == 1 then
+do
+  OPEN=0
+  wi_close toccata_capture
+end
+wi_isopen blockproperties
+if result == 1 then
+do
+  OPEN=0
+  wi_close blockproperties
+end
+wi_isopen expandshrink
+if result == 1 then
+do
+  OPEN=0
+  wi_close expandshrink
+end
+wi_isopen instload
+if result == 1 then
+do
+  OPEN=0
+  wi_close instload
+end
+wi_isopen keyboardoptions
+if result == 1 then
+do
+  OPEN=0
+  wi_close keyboardoptions
+end
+wi_isopen midiinputchannel
+if result == 1 then
+do
+  OPEN=0
+  wi_close midiinputchannel
+end
+wi_isopen new
+if result == 1 then
+do
+  OPEN=0
+  wi_close new
+end
+wi_isopen progkeys
+if result == 1 then
+do
+  OPEN=0
+  wi_close progkeys
+end
+wi_isopen samplelisteditor
+if result == 1 then
+do
+  OPEN=0
+  wi_close samplelisteditor
+end
+wi_isopen save_xpksettings
+if result == 1 then
+do
+  OPEN=0
+  wi_close save_xpksettings
+end
+wi_isopen sa_changevolume
+if result == 1 then
+do
+  OPEN=0
+  wi_close sa_changevolume
+end
+wi_isopen sa_echo
+if result == 1 then
+do
+  OPEN=0
+  wi_close sa_echo
+end
+wi_isopen smfloadoptions
+if result == 1 then
+do
+  OPEN=0
+  wi_close smfloadoptions
+end
+wi_isopen sy_volume
+if result == 1 then
+do
+  OPEN=0
+  wi_close sy_volume
+end
+wi_isopen trackvolumes
+if result == 1 then
+do
+  OPEN=0
+  wi_close trackvolumes
+end
+wi_isopen editor
+if result == 1 then
+do
+  OPEN=0
+  wi_close editor
+end
+wi_isopen font
+if result == 1 then
+do
+  OPEN=0
+  wi_close font
+end
+wi_isopen instparams
+if result == 1 then
+do
+  OPEN=0
+  wi_close instparams
+end
+wi_isopen keyboardshortcuts
+if result == 1 then
+do
+  OPEN=0
+  wi_close keyboardshortcuts
+end
+wi_isopen midimessageeditor
+if result == 1 then
+do
+  OPEN=0
+  wi_close midimessageeditor
+end
+wi_isopen noteecho
+if result == 1 then
+do
+  OPEN=0
+  wi_close noteecho
+end
+wi_isopen printoptions
+if result == 1 then
+do
+  OPEN=0
+  wi_close printoptions
+end
+wi_isopen saveoptions
+if result == 1 then
+do
+  OPEN=0
+  wi_close saveoptions
+end
+wi_isopen sa_addworkspace
+if result == 1 then
+do
+  OPEN=0
+  wi_close sa_addworkspace
+end
+wi_isopen sa_chordcreation
+if result == 1 then
+do
+  OPEN=0
+  wi_close sa_chordcreation
+end
+wi_isopen sa_filterboost
+if result == 1 then
+do
+  OPEN=0
+  wi_close sa_filterboost
+end
+wi_isopen songannotation
+if result == 1 then
+do
+  OPEN=0
+  wi_close songannotation
+end
+wi_isopen synthsoundeditor
+if result == 1 then
+do
+  OPEN=0
+  wi_close synthsoundeditor
+end
+wi_isopen tempo
+if result == 1 then
+do
+  OPEN=0
+  wi_close tempo
+end
+wi_isopen transpose
+if result == 1 then
+do
+  OPEN=0
+  wi_close transpose
+end
+wi_isopen eqbar
+if result == 1 then
+do
+  OPEN=0
+  wi_close eqbar
+end
+wi_isopen highlightoptions
+if result == 1 then
+do
+  OPEN=0
+  wi_close highlightoptions
+end
+wi_isopen insttype
+if result == 1 then
+do
+  OPEN=0
+  wi_close insttype
+end
+wi_isopen miscoptions
+if result == 1 then
+do
+  OPEN=0
+  wi_close miscoptions
+end
+wi_isopen palette
+if result == 1 then
+do
+  OPEN=0
+  wi_close palette
+end
+wi_isopen sampleeditor
+if result == 1 then
+do
+  OPEN=0
+  wi_close sampleeditor
+end
+wi_isopen savetimer
+if result == 1 then
+do
+  OPEN=0
+  wi_close savetimer
+end
+wi_isopen sa_adjusty
+if result == 1 then
+do
+  OPEN=0
+  wi_close sa_adjusty
+end
+wi_isopen sa_noise
+if result == 1 then
+do
+  OPEN=0
+  wi_close sa_noise
+end
+wi_isopen sa_mix
+if result == 1 then
+do
+  OPEN=0
+  wi_close sa_mix
+end
+wi_isopen songoptions
+if result == 1 then
+do
+  OPEN=0
+  wi_close songoptions
+end
+wi_isopen sy_program
+if result == 1 then
+do
+  OPEN=0
+  wi_close sy_program
+end
+wi_isopen tempoop
+if result == 1 then
+do
+  OPEN=0
+  wi_close tempoop
+end
+if OPEN == 1 then
+do
+  wi_changebox editor 1 73
+  wi_changebox information 1 212
+  wi_changebox maincontrol 1 11
+  wi_open information
+  wi_open maincontrol
+  wi_open editor
+  wi_activate editor
+end
+else
+do
+  wi_open maincontrol
+  wi_changebox maincontrol 1 11
+  wi_activate maincontrol
+end

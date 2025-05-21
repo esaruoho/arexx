@@ -1,0 +1,18 @@
+/* master volume down fast - (C) 1996 Fred Brooker */
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+address OCTAMED_REXX
+options results
+wi_isopen trackvolumes
+if result==0 then
+do
+  wi_changebox trackvolumes 1 1
+  wi_open trackvolumes
+  wi_activate trackvolumes
+end
+sg_getmastervol var VOL
+if VOL>10 then
+  sg_setmastervol VOL-10
+else
+  sg_setmastervol 1

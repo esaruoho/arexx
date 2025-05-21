@@ -1,0 +1,72 @@
+/* FFF adder (MIDI usage), (C) 1996 Fred Brooker
+
+Features:
+
+- adds FFF command into the block(s)
+- useful on MIDI tracks, but terribly slow
+
+   Version 1.1, 11/02/1996, spread as you like, modify, credit me :) */
+
+
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+address OCTAMED_REXX
+options results
+ed_getnumlines var EL
+ed_getnumtracks var ET
+ed_getnumblocks var BE
+ADD=0
+if BE==1 then
+do
+  wi_request '"[FFF adder] Wanna add a FFF command?"' '"Yup!|Cancel!"'
+  if result==0 then
+    exit
+  BS=1
+  BE=1
+end
+else
+do
+  wi_request '"[FFF adder] Wanna add a FFF command?"' '"Process THIS block.|Process ALL the BLOCKS!|Cancel!"'
+  if result==0 then
+    exit
+  if result==1 then
+  do
+    ed_getcurrblock
+    BE=result+1
+    BS=result+1
+    result=0
+  end
+  if result==2 then
+  do
+    ed_getnumblocks var BE
+    BS=1
+  end
+end
+do bcounter=BS-1 to BE-1
+  do tcounter=0 to ET-1
+    SETIT=0
+    op_update on
+    wi_showstring "[FFF adder] Working on track #" tcounter + 1 "block #" bcounter " inclusions:" ADD "..."
+    op_update off
+    do lcounter=0 to EL-1
+      'ed_getdata note B=' bcounter ' L=' lcounter ' T=' tcounter ' var NOTE'
+      'ed_getdata cmdnum B=' bcounter ' L=' lcounter ' T=' tcounter ' var CMDNUM '
+      'ed_getdata qual B=' bcounter ' L=' lcounter ' T=' tcounter ' var QUAL '
+      if ~(NOTE==0) then
+      do
+        SETIT=1
+      end
+      if ((SETIT*65536)+(CMDNUM*256)+QUAL)==69631 then
+        SETIT=0
+      if ((SETIT*131072)+CMDNUM+NOTE+QUAL)==131072 then
+      do
+        'ed_setdata B=' bcounter ' L=' lcounter ' T=' tcounter ' cmdnum 15 qual 255'
+        SETIT=0
+        ADD=ADD+1
+      end
+    end
+  end
+end
+op_update on
+wi_showstring "[FFF adder] Done."

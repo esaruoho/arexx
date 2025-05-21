@@ -1,0 +1,13 @@
+/* instrument volume down fast - (C) 1996 Fred Brooker */
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+address OCTAMED_REXX
+options results
+wi_open instparams
+wi_activate instparams
+in_getvolume var VOL
+if VOL>10 then
+  in_setvolume VOL-10
+else
+  in_setvolume 1

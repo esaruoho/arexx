@@ -1,0 +1,74 @@
+/* Menu oriented file launcher, (C) 1996 Fred Brooker
+
+Features:
+
+- launches Filemaster, CED or both
+- checks for CED port 
+
+   Version: 1.0, 03/02/1996, spread as you like, modify, credit me :) */
+
+
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+TIMEOUT=15      /* CED pop-up timeout */
+address OCTAMED_REXX
+options results
+op_update on
+wi_request '"[LAUNCHER] How nice to see you! Get a choice:"' '"FileMaster|Cygnus EDitor|Both|Cancel"'
+if result == 1 then
+do
+  'wi_showstring [LAUNCHER] Launching FileMaster...'
+  call FM
+end
+if result == 2 then
+do
+  'wi_showstring [LAUNCHER] Launching Cygnus EDitor...'
+  call CED
+end
+if result == 3 then
+do
+  'wi_showstring [LAUNCHER] Launching FileMaster & Cygnus EDitor...'
+  call CED
+  call FM
+end
+exit
+
+FM:
+  address command
+  'run >nil: <nil: c:fm'
+  return
+
+CED:
+  if ~show(ports,'ced_port') then
+  do
+    address command
+    'run >nil: <nil: c:ced'
+  end
+  else
+  do
+    wi_request '"[LAUNCHER] CED already loaded!"' '"Yup!"'
+    wi_showstring
+  end
+  if ~show(ports,'ced_port') then
+  do
+    call TIME('Reset')
+    do while 1
+      if show(ports,'ced_port') then break
+      if time('E')>TIMEOUT then break
+    end
+    if ~show(ports,'ced_port') then
+    do
+      wi_request '"[LAUNCHER] Waiting for a CED port failed!"' '"Yup!"'
+      wi_showstring
+    end
+  end
+  return
+
+WAIT:
+  arg SECS
+  call TIME('Reset')
+  do while 1
+    if time('E')>SECS then break
+  end
+  return

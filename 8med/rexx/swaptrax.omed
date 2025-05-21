@@ -1,0 +1,35 @@
+/* Swaptrax, (C) 1996 Fred Brooker
+
+Features:
+
+- swaps current track (with cursor on) with the first range track
+
+   Version: 1.0, 11/02/1996, spread as you like, modify, credit me :) */
+
+
+
+if ~show(ports,'OCTAMED_REXX') then
+  exit
+address OCTAMED_REXX
+options results
+rn_isranged
+if result == 0 then
+do
+  wi_showstring '[SWAP TRAX] Set a range, at least a single note!'
+  exit
+end
+ed_getcurrtrack var currtrack
+rn_getrangestarttrack var rangetrack
+if rangetrack==currtrack then
+do
+  wi_showstring '[SWAP TRAX] Choose two trax by a cursor and a range.'
+  exit
+end
+op_update off
+rn_copy track
+'ed_goto T=' rangetrack
+rn_swap track
+'ed_goto T=' currtrack
+rn_paste track
+op_update on
+wi_showstring '[SWAP TRAX] Trax swapped.'
