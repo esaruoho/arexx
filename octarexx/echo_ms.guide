@@ -1,0 +1,66 @@
+@database FlipTrack.guide
+@Width 72
+@Node Main "Echo Synchronize"
+
+   Echo_MS.rexx
+
+  @{" Author            " link author}
+
+  @{" Requirements      " link requirements}
+
+  @{" Usage             " link usage}
+
+  @{" Version / History " link version}
+
+@endnode
+@node author "The Guilty Party..."
+
+   Echo_MS.rexx
+
+   Written by David T. Krupicz
+   Nov 22 1997
+
+@endnode
+@node requirements "Requirements"
+
+   Echo_MS.rexx
+
+   Required:
+      An Amiga computer
+      Kickstart version 37.175
+      Workbench version 38.36
+      OctaMED SoundStudio version 1.03c
+
+@endnode
+@node version "Version / History"
+
+   Echo_MS.rexx
+
+   Version 1.00
+
+   History
+   v1.00 (Nov 22 1997)  - First working version.
+
+@endnode
+@node usage "Usage"
+
+   Echo_MS.rexx
+
+   Usage
+
+   Echo_MS is used in the MIX mode of OctaMed Soundstudio
+   to synchronize the echo effect rate (in milliseconds)
+   based upon the BPM tempo and the number of lines per
+   beat.
+
+   Interesting efects can be achieved by setting the lines
+   per beat to a fractional position (ie 6 lines per beat
+   vs. a mod composed at 8 lines per beat), setting the
+   echo rate, and then replaying back at a tempo of 8 lines
+   per beat.
+
+   Simply assign the script to a convenient key using the
+   keyboard shortcuts editor in octamed.
+
+@endnode
+

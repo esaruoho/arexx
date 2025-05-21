@@ -1,0 +1,70 @@
+@database FlipTrack.guide
+@Width 72
+@Node Main "Flip Tracks"
+
+   Flip_Tracks.rexx
+
+  @{" Author            " link author}
+
+  @{" Requirements      " link requirements}
+
+  @{" Usage             " link usage}
+
+  @{" Version / History " link version}
+
+@endnode
+@node author "The Guilty Party..."
+
+   Flip_Tracks.rexx
+
+   Written by David T. Krupicz
+   Nov 22 1997
+
+@endnode
+@node requirements "Requirements"
+
+   Flip_Tracks.rexx
+
+   Required:
+      An Amiga computer
+      Kickstart version 37.175
+      Workbench version 38.36
+      OctaMED SoundStudio version 1.03c
+
+@endnode
+@node version "Version / History"
+
+   Flip_Tracks.rexx
+
+   Version 1.00
+
+   History
+   v1.00 (Nov 22 1997)  - First working version.
+                        - Does not implement multiple command pages.
+
+@endnode
+@node usage "Usage"
+
+   Flip_Tracks.rexx
+
+   Usage
+
+   Flip tracks may be used to flip the contents of the
+   current track or selected range:
+
+   000  C-1             ---
+   001  ---             D-2
+   002  C-2   becomes:  C-2
+   003  D-2             ---
+   004  ---             C-1
+
+   Simply assign the script to a convenient key using the
+   keyboard shortcuts editor in octamed.
+
+   Flip tracks will only work on the current track of a
+   selected range.  If no range is selected, the entire
+   track is flipped.  Multiple command pages are not
+   supported in this version.
+
+@endnode
+

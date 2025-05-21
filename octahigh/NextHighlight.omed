@@ -1,0 +1,10 @@
+/*Jump to the next Highlighted line. - Kjetil S. Matheussen*/
+options results
+ed_getnumlines var numlines
+ed_getcurrline var mline
+if mline=numlines-1 then exit
+do until (result | mline=numlines-1)
+	mline=mline+1
+	'ed_getlinehighlight' mline
+end
+'ed_goto line' mline

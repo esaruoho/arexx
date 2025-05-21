@@ -1,0 +1,50 @@
+/*	flip_currcmd.rexx
+ 	flips the current cmd-information on the range or track.
+	Made by Kjetil S. Matheussen 1998.
+
+	Based on an arexx-script made by David T. Krupicz.
+	Changes: Rewritten it to work properly, removed
+	note and instrument-number flip, and improoved
+	speed with around 75%.
+*/
+
+OPTIONS RESULTS
+
+rn_isranged VAR isranged            /* is there a range? */
+
+IF isranged THEN DO
+	rn_getrangestartline VAR rn_st
+	rn_getrangeendline VAR rn_end
+
+	rn_getrangestarttrack VAR tr_st
+	rn_getrangeendtrack VAR tr_end
+END;ELSE DO
+	rn_st = 0
+	ed_getnumlines VAR rn_end
+	rn_end=rn_end-1
+
+	ed_getcurrtrack VAR tr_st
+	tr_end=tr_st
+END
+
+length = ((rn_end - rn_st + 1)/2)-1
+
+DO r=tr_st to tr_end
+	op_update off
+	DO i = 0 to length             /* do inversion for half of range length */
+		drop top_cmdnum top_qual bot_cmdnum bot_qual
+		ed_getdata 't' r 'l' rn_st + i 'cmdnum' VAR top_cmdnum
+		ed_getdata 't' r 'l' rn_st + i 'qual' VAR top_qual
+		ed_getdata 't' r 'l' rn_end - i 'cmdnum' VAR bot_cmdnum
+		ed_getdata 't' r 'l' rn_end - i 'qual' VAR bot_qual
+		if ~(bot_cmdnum=top_cmdnum) then do
+			ed_setdata 't' r 'l' rn_st + i 'cmdnum' bot_cmdnum
+			ed_setdata 't' r 'l' rn_end - i 'cmdnum' top_cmdnum
+		end
+		if ~(bot_qual=top_qual) then do
+			ed_setdata 't' r 'l' rn_st + i 'qual' bot_qual
+			ed_setdata 't' r 'l' rn_end - i 'qual' top_qual
+		end
+	END
+	op_update on
+END

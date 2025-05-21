@@ -1,0 +1,28 @@
+/*	flipblock_highlights.omed - arexx-script for octamed.
+ 	Flips the highlights on the current block.
+	Made by Kjetil S. Matheussen 1998.
+*/
+
+
+OPTIONS RESULTS
+
+ed_getnumlines VAR rn_end
+rn_end=rn_end-1
+length = rn_end/2
+
+op_update off
+DO e=0 to length
+	drop top_high bot_high
+	ed_getlinehighlight e VAR top_high
+	ed_getlinehighlight rn_end-e VAR bot_high
+	if ~(bot_high=top_high) then do
+		if bot_high=1 then do
+			ed_highlightline rn_end - e OFF
+			ed_highlightline e ON
+		end;else do
+			ed_highlightline rn_end - e ON
+			ed_highlightline e OFF
+		end
+	end
+END
+op_update on

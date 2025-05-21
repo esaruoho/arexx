@@ -1,0 +1,97 @@
+@database FlipTrack.guide
+@Width 72
+@Node Main "Chroma Polaris SYSEX dump to MIDI cc (in OctaMED MMDx)"
+
+   SysexToCC_gui.rexx
+
+  @{" Author            " link author}
+
+  @{" Requirements      " link requirements}
+
+  @{" Usage             " link usage}
+
+  @{" Version / History " link version}
+
+@endnode
+@node author "The Guilty Party..."
+
+   SysexToCC_gui.rexx
+
+   Written by David T. Krupicz
+   Nov 22 1997
+
+@endnode
+@node requirements "Requirements"
+
+   Echo_MS.rexx
+
+   Required:
+      An Amiga computer
+      A Chroma Polaris analogue keyboard ;) *
+      A MIDI interface
+      Kickstart version 37.175
+      Workbench version 38.36
+      OctaMED SoundStudio version 1.03c
+      Syx v1.1 (sysex capture program)
+      rexxsupport.library
+      rexxarplib.library
+      Assigned directory "sysex:"
+
+* This might be the hard one to get on the list...
+   ..but it's well worth it ;)
+
+@endnode
+@node version "Version / History"
+
+   SysexToCC_gui.rexx
+
+   Version ?.??
+
+   History
+   v?.?? (Nov 22 1997)  - Who knows what version this is...
+                          I've changed it more times than
+                          I can count!
+
+@endnode
+@node usage "Usage"
+
+   SysexToCC_gui.rexx
+
+   Usage
+
+   Hook the midi OUT of the Chroma Polaris keyboard into
+   the midi in of the AMIGA.
+
+   Run Syx 1.1 (or other compatible SYSEX dump program)
+
+   Select 'REC' in Syx 1.1
+
+   Press 'lower function' , 'casette' , '12' on the chroma
+   polaris
+
+   Save the 121 byte sysex file into the assigned dir
+   "sysex:"
+
+   In OctaMed Soundstudio, create a new block and run the
+   arexx script SysexToCC_gui.rexx.  Follow the on-screen
+   prompts for file selection.
+
+   For 121 byte sysex dumps, select "ZERO" in the offset
+   requester.
+
+   This version allows multiple sysex dumps to be placed
+   in a single file.  The requester selection "CURSOR"
+   will set the appropriate 121 byte file offset based
+   upon the number of the current line that the tracker
+   editor cursor is on.
+
+   This creates a track of midi continuous controller
+   data which can be sent to the chroma polaris which
+   will replicate all the slider and button settings of
+   the patch which was captured through SYSEX.  These
+   CC commands must be sent at the beginning of a
+   song by placing a note for any of the 16 midi channels
+   at the start of the block, and playing the block.
+
+@endnode
+

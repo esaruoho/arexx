@@ -1,0 +1,66 @@
+/*	flipblock_allcmd.omed - arexx-script for octamed.
+ 	Flips the range or track including all the cmd-pages.
+	Made by Kjetil S. Matheussen 1998.
+
+	Based on an arexx-script made by David T. Krupicz.
+	Changes: Rewritten it to work properly, included cmd-pages,
+	included it to work for all tracks in range, and
+	improoved speed with around 75%.
+*/
+
+OPTIONS RESULTS
+
+ed_getnumpages VAR numpages
+
+rn_isranged VAR isranged            /* is there a range? */
+
+IF isranged THEN DO
+	rn_getrangestartline VAR rn_st
+	rn_getrangeendline VAR rn_end
+
+	rn_getrangestarttrack VAR tr_st
+	rn_getrangeendtrack VAR tr_end
+END;ELSE DO
+	rn_st = 0
+	ed_getnumlines VAR rn_end
+	rn_end=rn_end-1
+	ed_getcurrtrack VAR tr_st
+	tr_end=tr_st
+END
+
+length = ((rn_end - rn_st + 1)/2)-1
+
+DO r=tr_st to tr_end
+	op_update off
+	DO i = 0 to length
+		drop top_note top_inum bot_note bot_inum
+		ed_getdata 't' r 'l' rn_st + i 'note' VAR top_note          /* get top note data */
+		ed_getdata 't' r 'l' rn_st + i 'inum' VAR top_inum
+		ed_getdata 't' r 'l' rn_end - i 'note' VAR bot_note          /* get BOTtom note data */
+		ed_getdata 't' r 'l' rn_end - i 'inum' VAR bot_inum
+		if ~(bot_note=top_note) then do
+			ed_setdata 't' r 'l' rn_st + i 'note' bot_note
+			ed_setdata 't' r 'l' rn_end - i 'note' top_note
+		end
+		if ~(bot_inum=top_inum) then do
+			ed_setdata 't' r 'l' rn_st + i 'inum' bot_inum
+			ed_setdata 't' r 'l' rn_end - i 'inum' top_inum
+		end
+		DO l = 1 TO numpages
+			drop top_cmdnum top_qual bot_cmdnum bot_qual
+			ed_getdata 't' r 'l' rn_st + i 'p' l 'cmdnum' VAR top_cmdnum
+			ed_getdata 't' r 'l' rn_st + i 'p' l 'qual' VAR top_qual
+			ed_getdata 't' r 'l' rn_end - i 'p' l 'cmdnum' VAR bot_cmdnum
+			ed_getdata 't' r 'l' rn_end - i 'p' l 'qual' VAR bot_qual
+			if ~(bot_cmdnum=top_cmdnum) then do
+				ed_setdata 't' r 'l' rn_st + i 'p' l 'cmdnum' bot_cmdnum
+				ed_setdata 't' r 'l' rn_end - i 'p' l 'cmdnum' top_cmdnum
+			end
+			if ~(bot_qual=top_qual) then do
+				ed_setdata 't' r 'l' rn_st + i 'p' l 'qual' bot_qual
+				ed_setdata 't' r 'l' rn_end - i 'p' l 'qual' top_qual
+			end
+		END
+	END
+	op_update on
+END
