@@ -7,3 +7,6 @@ There's a Sound on Sound article! https://www.soundonsound.com/techniques/octame
 and another on OctaMED / AREXX : https://www.soundonsound.com/techniques/octamed
 and another on OctaMED https://www.soundonsound.com/techniques/octamed-v6-sound-studio
 
+## thezone / systmcrsh
+the The Zone stuff is from this conversation: https://eab.abime.net/showthread.php?t=58409
+Hopefully someone has a way of reaching out to systmcrsh
