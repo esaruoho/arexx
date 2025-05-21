@@ -1,16 +1,12 @@
-# Arexx
-I've found it immensely hard to just find OctaMED AREXX/REXX stuff. This Repository tries to collect them together and functions as a notepad and as a stash.
+# OctaMED AREXX / REXX
+This is a stash of rare AREXX / REXX scripts for OctaMED use. Some of them are from aminet, others from long-dead websites, some from "The Zone". Always looking for more, thank you.
 
-
-## Aminet
+## aminet
 
 ### OctaScripts & OctaScripts2.lha
-Source: https://aminet.net/package/mus/edit/OctaScripts
-
-Source: https://aminet.net/package/mus/edit/OctaScripts2
-
-Author: Johan Persson / fash@swipnet.se
-
+- Source: https://aminet.net/package/mus/edit/OctaScripts
+- Source: https://aminet.net/package/mus/edit/OctaScripts2
+- Author: Johan Persson / fash@swipnet.se
 
 ```
 -------------------------------------------------------------------------
@@ -136,8 +132,8 @@ http://home6.swipnet.se/~w-68753/johan.html
 ```
 
 ### 8med.lha
-Source: https://aminet.net/package/util/rexx/8med
-Author: Fred Brooker / Contortion, halloran@sci.muni.cz
+- Source: https://aminet.net/package/util/rexx/8med
+- Author: Fred Brooker / Contortion, halloran@sci.muni.cz
 
 ```
 This file will contain all MY own AREXX Octamed v6.0
@@ -169,9 +165,8 @@ Anyway if you feel so, do NOT hesitate to warm your mailer up!
 
 ### Octarexx
 
-Source: https://aminet.net/package/mus/misc/octarexx
-
-Author: David T. Krupicz
+- Source: https://aminet.net/package/mus/misc/octarexx
+- Author: David T. Krupicz
 
 ```
 Short:        3 useful Octamed SoundStudio Arexx scripts
@@ -187,9 +182,8 @@ Sysestocc_gui.rexx   patch librarian for Chroma Polaris keyboard owners
 
 ### Octahigh
 
-Source: http://www.aminet.net/package/mus/misc/octahigh
-
-Author: Kjetil S. Matheussen
+- Source: http://www.aminet.net/package/mus/misc/octahigh
+- Author: Kjetil S. Matheussen
 
 ```
 Short:        Two arexx-scripts for octamed.
@@ -206,9 +200,8 @@ line in Octamed.
 
 ### Octaflip
 
-Source: https://aminet.net/package/mus/misc/octaflip
-
-Author: Kjetil S. Matheussen
+- Source: https://aminet.net/package/mus/misc/octaflip
+- Author: Kjetil S. Matheussen
 
 ```
 Short:        6 arexx-scripts for octamed.
