@@ -6,8 +6,11 @@ I've found it immensely hard to just find OctaMED AREXX/REXX stuff. This Reposit
 
 ### OctaScripts & OctaScripts2.lha
 Source: https://aminet.net/package/mus/edit/OctaScripts
+
 Source: https://aminet.net/package/mus/edit/OctaScripts2
+
 Author: Johan Persson / fash@swipnet.se
+
 
 ```
 -------------------------------------------------------------------------
@@ -164,4 +167,87 @@ Anyway if you feel so, do NOT hesitate to warm your mailer up!
 ```
 
 
+### Octarexx
 
+Source: https://aminet.net/package/mus/misc/octarexx
+
+Author: David T. Krupicz
+
+```
+Short:        3 useful Octamed SoundStudio Arexx scripts
+Author:       David T. Krupicz
+Uploader:     David T  Krupicz <dkrupicz interlog com>
+Type:         mus/misc
+Architecture: generic
+
+Flip_Track.rexx      flips a track or selected range upside-down
+Echo_Ms.rexx         sets MIX mode echo rate to sync with BPM
+Sysestocc_gui.rexx   patch librarian for Chroma Polaris keyboard owners
+```
+
+### Octahigh
+
+Source: http://www.aminet.net/package/mus/misc/octahigh
+
+Author: Kjetil S. Matheussen
+
+```
+Short:        Two arexx-scripts for octamed.
+Author:       kjetilma@ifi.uio.no (Kjetil S. Matheussen)
+Uploader:     kjetilma ifi uio no (Kjetil S  Matheussen)
+Type:         mus/misc
+Requires:     Octamed 6 or OSS
+Architecture: generic
+
+Two rexx-scripts that makes the cursor
+move to the next or previous highlightened
+line in Octamed.
+```
+
+### Octaflip
+
+Source: https://aminet.net/package/mus/misc/octaflip
+
+Author: Kjetil S. Matheussen
+
+```
+Short:        6 arexx-scripts for octamed.
+Author:       kjetilma@ifi.uio.no (Kjetil S. Matheussen)
+Uploader:     kjetilma ifi uio no (Kjetil S  Matheussen)
+Type:         mus/misc
+Architecture: generic
+
+Six rexx-scripts that flips a range, a track
+or a block in Octamed.
+
+When you flip, you do this:
+
+This..becomes...this.
+--------------------
+C-2   ------->  F-4
+---   ------->  ---
+F-4   ------->  C-2
+
+
+In other words: You play your music backwards!
+
+
+flip_allcmd.omed      - flips range or track, and all cmd-pages.
+flip_nocmd.omed       - flips range or track, but not the cmd-information.
+flip_onlycmd.omed     - flips range or track, but _only_ the current cmd-information.
+flipblock_nocmd.omed  - flips the current block, but not the cmd-information.
+flipblock_allcmd.omed - flips the current block, and all cmd-pages.
+flipblock_highlights.omed - do only flip the highlights on the current block.
+
+Note: flipblock_nocmd and flipblock_allcmd allso flips the highlights.
+
+
+All scripts made by Kjetil S. Matheussen 1998.
+Based on an arexx-script made by David t. Krupicz. But that one is
+nearly totally rewritten.
+
+P.S. You may think this sounds stupid? Try it, and you will
+discover new melodies and sounds. BTW: The classic componist,
+and the maker of the 12-tone music, Arnold Shoenberg, used
+this technik alot in his music. So, why can't you to???
+```
