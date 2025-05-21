@@ -1,0 +1,15 @@
+/************************************************************
+
+                   OctaMED ARexx Script
+
+       Decreases MIDI preset on current instrument
+
+************************************************************/
+
+IN_GETMIDIPRESET VAR preset
+
+IF (preset>0) THEN DO
+   IN_SETMIDIPRESET preset-1
+END
+
+EXIT

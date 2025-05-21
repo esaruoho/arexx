@@ -1,0 +1,16 @@
+/************************************************************
+
+                   OctaMED ARexx Script
+
+   Cross fades the current sample (and moves the original
+   into the sample buffer).
+
+************************************************************/
+
+SA_SAMPLETOBUFFER
+SA_RANGE ALL
+SA_REVERSERANGE
+SA_RANGE 0 0				/* removes range */
+SA_MIX SOURCELEVEL 50 DESTLEVEL 50
+
+EXIT

@@ -1,0 +1,27 @@
+/************************************************************
+
+                   OctaMED ARexx Script
+
+    PT Clone (Left Alt + Key two steps left from backspace):
+    Copies command from the line above, increases the level
+    and puts it on the current line.
+
+************************************************************/
+
+OP_GET EDIT VAR editstatus
+
+IF (editstatus=1) THEN DO
+   ED_GETCURRLINE VAR currline
+   ED_GETNUMLINES VAR lastline
+
+   IF (currline = 0) THEN fromline = lastline-1
+   ELSE fromline = currline-1
+
+   ED_GETDATA LINE fromline CMDNUM VAR num
+   ED_GETDATA LINE fromline CMDLVL VAR lvl
+
+   ED_SETDATA CMDNUM num CMDLVL lvl+1
+   ED_ADVANCELINE DOWN SPACING
+END
+
+EXIT

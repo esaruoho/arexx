@@ -1,0 +1,17 @@
+/************************************************************
+
+                   OctaMED ARexx Script
+
+      Replaces instrument number under cursor with the
+      selected instrument's number (on current track).
+
+************************************************************/
+
+IN_GETNUMBER VAR nrslot
+ED_GETDATA INUM VAR nrnote
+
+IF (nrnote > 0) THEN DO
+   RN_CHANGEINUM CHANGE SRC nrnote DEST nrslot AFFECT 3		/* affect current track */
+END
+
+EXIT

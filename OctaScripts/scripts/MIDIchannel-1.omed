@@ -1,0 +1,15 @@
+/************************************************************
+
+                   OctaMED ARexx Script
+
+       Decreases MIDI channel on current instrument
+
+************************************************************/
+
+IN_GETMIDICHANNEL VAR ch
+
+IF (ch>0) THEN DO
+   IN_SETMIDICHANNEL ch-1
+END
+
+EXIT

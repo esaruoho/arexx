@@ -1,0 +1,201 @@
+/*
+    "Project Info" - Displays some info about instruments etc.
+    $VER: Project_Info.omed v1.0 (97-12-29)
+
+    ARexx script for use with OctaMED Soundstudio v1.03c (ARexx version 3)
+    or higher. Might work with OctaMED v6 aswell (not tested).
+
+    Author: Johan Persson (planet4@swipnet.se)
+*/
+
+nl= '0a'x
+
+ADDRESS octamed_rexx
+OPTIONS RESULTS
+
+IF ~show(l,"rexxreqtools.library") THEN DO
+    IF ~addlib("rexxreqtools.library", 0, -30) THEN DO
+        'wi_request "Please install RexxReqTools.library." "OK"'
+        EXIT
+    END
+END
+
+ARG cli
+
+type= cli
+
+unusedblocks= 0
+sample= 0
+sample16= 0
+midi= 0
+midia= 0
+midib= 0
+midic= 0
+midid= 0
+midie= 0
+midif= 0
+midig= 0
+midih= 0
+midii= 0
+midij= 0
+midik= 0
+midil= 0
+midim= 0
+midin= 0
+midio= 0
+midip= 0
+blocksdeleted= 0
+
+/* --- Accidentally removes the song modified indicator -----
+sg_getfilesize VAR multimod    /* MMD2 multimod is default */
+---------------------------------------------------------- */
+
+sg_gettempo VAR tempo_main
+ed_getnumplayseq VAR songlen
+time= songlen*8
+time_min= time%tempo_main
+time_sec= time/tempo_main-time_min
+time_sec= time_sec*60
+time_sec= trunc(time_sec, 0)
+IF time_sec < 10 THEN time_sec= '0'time_sec''
+
+wi_showstring 'Looking for unused blocks...'
+
+ed_getnumblocks VAR blocks
+DO loop = 0 TO blocks-1
+    ed_isblockinseq block loop
+    IF RESULT = 0 THEN unusedblocks= unusedblocks+1
+END
+
+wi_showstring 'Gathering instrument information...'
+
+in_getnumber VAR currinst
+DO instno = 1 TO 63
+    in_select instno
+    in_isslotused
+    IF RESULT = 1 THEN DO
+        in_gettype
+        IF RESULT = 'SAMPLE' THEN sample= sample+1
+        IF RESULT = 'SAMPLE16' THEN sample16= sample16+1
+    END
+    in_getmidichannel
+    IF RESULT > 0 THEN DO
+        midi= midi+1
+        IF RESULT = 1 THEN midia= midia+1
+        IF RESULT = 2 THEN midib= midib+1
+        IF RESULT = 3 THEN midic= midic+1
+        IF RESULT = 4 THEN midid= midid+1
+        IF RESULT = 5 THEN midie= midie+1
+        IF RESULT = 6 THEN midif= midif+1
+        IF RESULT = 7 THEN midig= midig+1
+        IF RESULT = 8 THEN midih= midih+1
+        IF RESULT = 9 THEN midii= midii+1
+        IF RESULT = 10 THEN midij= midij+1
+        IF RESULT = 11 THEN midik= midik+1
+        IF RESULT = 12 THEN midil= midil+1
+        IF RESULT = 13 THEN midim= midim+1
+        IF RESULT = 14 THEN midin= midin+1
+        IF RESULT = 15 THEN midio= midio+1
+        IF RESULT = 16 THEN midip= midip+1
+    END
+END
+in_select currinst
+
+IF unusedblocks = 0 THEN unusedblocks= '-'
+
+IF midi = 0 THEN midi= '-'
+IF sample = 0 THEN sample= '-'
+IF sample16 = 0 THEN sample16= '-'
+
+IF midia = 0 THEN midia= '-'
+IF midib = 0 THEN midib= '-'
+IF midic = 0 THEN midic= '-'
+IF midid = 0 THEN midid= '-'
+IF midie = 0 THEN midie= '-'
+IF midif = 0 THEN midif= '-'
+IF midig = 0 THEN midig= '-'
+IF midih = 0 THEN midih= '-'
+IF midii = 0 THEN midii= '-'
+IF midij = 0 THEN midij= '-'
+IF midik = 0 THEN midik= '-'
+IF midil = 0 THEN midil= '-'
+IF midim = 0 THEN midim= '-'
+IF midin = 0 THEN midin= '-'
+IF midio = 0 THEN midio= '-'
+IF midip = 0 THEN midip= '-'
+
+sg_ismodified
+IF RESULT = 0 THEN modified= '  Saved'
+ELSE modified= '* Unsaved'
+
+wi_showstring
+
+choise = rtezrequest('Song status:  'modified'' || NL ||,
+                     'Tempo:          'tempo_main' BPM' || NL ||,
+                     'Calc. time:     'time_min':'time_sec'' || NL ||,
+                     'Unused blocks:  'unusedblocks'' || NL ||,
+                     '' || NL ||,
+                     '----- Instruments used -----' || NL ||,
+                     '          8-bit: 'sample'' || NL ||,
+                     '         16-bit: 'sample16'' || NL ||,
+                     '           MIDI: 'midi'' || NL ||,
+                     '' || NL||,
+                     '---- MIDI channels used ----' || NL ||,
+                     '     1: 'midia'          9: 'midii' ' || NL ||,
+                     '     2: 'midib'         10: 'midij' ' || NL ||,
+                     '     3: 'midic'         11: 'midik' ' || NL ||,
+                     '     4: 'midid'         12: 'midil' ' || NL ||,
+                     '     5: 'midie'         13: 'midim' ' || NL ||,
+                     '     6: 'midif'         14: 'midin' ' || NL ||,
+                     '     7: 'midig'         15: 'midio' ' || NL ||,
+                     '     8: 'midih'         16: 'midip' ',,
+                     'OK|Delete _unused blocks|OK',,
+                     'Project info',,
+                     'rt_reqpos=reqpos_centerscr rt_pubscrname=OCTAMED')
+
+IF (choise = 1) | (choise = 0) THEN DO
+    EXIT
+END
+
+wi_showstring 'Scanning for unused blocks...'
+ed_getcurrblock VAR currblock
+
+IF (choise = 2) THEN DO
+    DO loop = 0 TO blocks-1
+        ed_goto block loop
+        ed_isblockinseq
+        IF RESULT = 0 THEN DO
+            tabort = rtezrequest('Delete block #'loop' ?',,
+                     'Yes|Delete _All|_Cancel|No',,
+                     'Unused block found',,
+                     'rt_reqpos=reqpos_centerscr rt_pubscrname=OCTAMED')
+            IF tabort = 3 THEN DO
+                wi_showstring
+                EXIT
+            END
+            IF tabort = 2 THEN DO
+                wi_showstring 'Deleting all unused blocks...'
+                DO loop = 0 TO blocks-1
+                    ed_goto block loop
+                    ed_isblockinseq
+                    IF RESULT = 0 THEN DO
+                        blocksdeleted= blocksdeleted+1
+                        ed_deleteblock
+                    END
+                END
+                wi_showstring ''blocksdeleted' unused block(s) deleted.'
+                ed_goto block currblock
+                EXIT
+            END
+            IF tabort = 1 THEN DO
+                blocksdeleted= blocksdeleted+1
+                ed_deleteblock
+                wi_showstring 'Scanning for unused blocks...'
+            END
+        END
+    END
+END
+
+wi_showstring ''blocksdeleted' unused block(s) deleted.'
+ed_goto block currblock
+EXIT

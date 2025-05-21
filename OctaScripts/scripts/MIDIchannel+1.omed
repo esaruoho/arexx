@@ -1,0 +1,20 @@
+/************************************************************
+
+                   OctaMED ARexx Script
+
+       Increases MIDI channel on current instrument
+
+************************************************************/
+
+IN_GETVOLUME VAR volume
+IF (volume=0) THEN DO
+   IN_SETVOLUME VOL 64
+END
+
+IN_GETMIDICHANNEL VAR ch
+
+IF (ch<16) THEN DO
+   IN_SETMIDICHANNEL ch+1
+END
+
+EXIT

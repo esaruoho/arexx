@@ -1,0 +1,12 @@
+/************************************************************
+
+                   OctaMED ARexx Script
+
+    Selects a random MIDI preset on current instrument
+
+************************************************************/
+
+rnd = RANDOM(1,128,TIME(S))
+IN_SETMIDIPRESET PRESET rnd
+
+EXIT

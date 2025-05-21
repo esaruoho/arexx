@@ -1,0 +1,15 @@
+/************************************************************
+
+                   OctaMED ARexx Script
+
+       Increases MIDI preset on current instrument
+
+************************************************************/
+
+IN_GETMIDIPRESET VAR preset
+
+IF (preset<128) THEN DO
+   IN_SETMIDIPRESET preset+1
+END
+
+EXIT
