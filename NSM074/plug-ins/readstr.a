@@ -1,0 +1,159 @@
+
+;	Functions to use a con-window in Octamed.
+;	Con-windows are really fast, small, easy
+;	and practical to use. No need to use gadgets.
+;
+;	(ok, most all of these functions except one
+;	are accessable directly from c, but I just can't
+;	get them to work.)
+;
+;	Made by Kjetil S. Matheussen, 3.1.99.
+
+
+			xdef	_opendoslibrary
+			xdef	_openfile
+			xdef	_openoctacon
+			xdef	_closefile
+			xdef	_readstring
+			xdef	_writestring
+			xdef	_closedoslibrary
+
+			section	text,code
+
+
+_opendoslibrary:
+			move.l	a6,-(sp)
+			move.l	4.w,a6
+			lea.l		dosname,a1
+			jsr		-$198(a6)
+			move.l	a6,(sp)+
+			rts
+
+;	d1=filestring,d2=accessMode,a6=dosbase,
+_openfile:
+			jmp		-30(a6)
+
+
+
+;input:
+;a5=dosbase
+;d3=window-width
+;d2=window-height
+
+;used registers:
+;a3=constring
+_openoctacon:
+			movem.l	d2/d3/d7/a3/a6,-(sp)
+
+			lea		constring(pc),a3
+
+			lea.l		intuitionname,a1			;open intuition.library
+			move.l	4.w,a6
+			jsr		-$198(a6)
+			move.l	d0,a6
+
+			lea.l		octascreenname,a0			;LockPubScreen
+			jsr		-$1fe(a6)
+			move.l	d0,a1
+
+			move.w	8(a1),d7						;Find the left-edge
+			neg.w		d7
+			add.w		#50,d7						;*hark*
+			moveq		#4,d1
+			bsr.s		uwordtostring
+
+			move.w	$a(a1),d7					;Find the top-edge
+			neg.w		d7
+			moveq		#10,d1
+			bsr.s		uwordtostring
+
+			move.l	#0,a0							;UnlockPubScreen
+			jsr		-$204(a6)
+
+			move.l	a6,a1
+			move.l	4.w,a6						;Close intution-library
+			jsr		-414(a6)
+
+			move.l	d2,d7							;Set window-height
+			moveq		#22,d1
+			bsr.s		uwordtostring
+
+			move.l	d3,d7							;Set window-width
+			moveq		#16,d1
+			bsr.s		uwordtostring
+
+
+;	d1=filestring,d2=accessMode,a6=dosbase - Open file
+			move.l	a3,d1
+			move.l	#$3ee,d2
+			move.l	a5,a6
+			jsr		-30(a6)
+
+			movem.l	(sp)+,d2/d3/d7/a3/a6
+			rts
+
+uwordtostring:
+	move.l	a3,a0
+
+	addq.w	#5,d1
+	add.l		d1,a0
+
+	moveq		#3,d1										;Accomumlate 4 digits first
+prevdigit:
+	andi.l	#$0000ffff,d7							;Clears the reminder
+	divu		#10,d7
+	move.l	d7,d0
+	swap		d0											;D0 will now be the reminder of the d7/10 division
+	add.b		#$30,d0
+	move.b	d0,-(a0)									;Sets the 4 last digits
+	dbra		d1,prevdigit
+
+	add.b		#$30,d7
+	move.b	d7,-(a0)									;Sets the first digit
+
+	rts
+
+
+;	d1=filehandle,a6=dosbase
+_closefile:
+			jmp		-36(a6)
+
+
+;	d1=filehandle,d2=buffer,d3=length,a6=dosbase
+_readstring:
+			jsr		-42(a6)
+			move.l	d2,a0
+			move.b	#0,-1(a0,d0)
+			rts
+
+;d1=filehandle,d2=buffer,d3=length,a6=dosbase
+_writestring:
+			jmp		-48(a6)
+
+
+;	a1=dosbase
+_closedoslibrary:
+			move.l	a6,-(sp)
+			move.l	4.w,a6
+			jsr		-414(a6)
+			move.l	(sp)+,a6
+			rts
+
+
+
+
+dosname:
+			dc.b		"dos.library",0
+
+intuitionname:
+			dc.b		"intuition.library",0
+
+constring:
+			dc.b		"CON:00000/00000/00000/00000/NSM plugin-window/SCREEN"
+
+octascreenname:
+			dc.b		"OCTAMED",0
+
+
+			END
+

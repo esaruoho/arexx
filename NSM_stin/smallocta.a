@@ -1,0 +1,305 @@
+;	Smallocta. Stripped version of Octacontrol.a
+;  special made for the stin plug-ins.
+;
+;	Version: 0.74
+;	Made by Kjetil S. Matheussen 19.2.98
+;  Strip down done 6.8.99.
+
+
+	xdef	_getblockbase
+
+	xdef	_getnumlines
+	xdef	_getlinehighlight
+
+	xdef	_getinum
+	xdef	_setinum
+
+	xdef	_getcurrtrack
+	xdef	_getcurrline
+	xdef	_getcurrblock
+
+	xdef	_sendrexx
+
+	xdef	_getoctabase
+
+
+	section	text,code
+
+
+_getblockbase:
+	move.l	d6,-(sp)
+;	move.l	octabase(PC),a0
+	sub.l		#$ae86,a0
+	move.l	(a0),a0
+	rol.l		#2,d6
+	add.l		d6,a0
+	move.l	(a0),d0
+	add.l		#$3e,d0
+	move.l	(sp)+,d6
+	rts
+
+
+_getnumlines:
+	move.w		-$3c(a0),d0
+	addq.w		#1,d0											;This is quite stupid, but its the
+																	;way the OCTAMED_REXX port does it.
+	rts
+
+_getlinehighlight:
+	moveq			#0,d0
+
+	cmp.w			-$3c(a0),d1									;Checks if at legal line
+	bgt.s			failed_linehighlight
+	btst			#15,d1										;Check if line is negative
+	bne.s			failed_linehighlight
+
+	move.l		-$10(a0),a0
+	cmp.l			#0,a0											;This address does only exist if there are any
+	beq.s			failed_linehighlight						;highlightened lines
+	add.l			d1,a0
+	move.b		(a0),d0
+
+failed_linehighlight:
+	rts
+
+
+
+getnoteinumpos:
+
+	move.w		-$3e(a0),d3					;Number of tracks in block
+
+	cmp.w			d3,d1							;Checks if at legal track
+	bge.s			getnoteinumpos_exit
+	cmp.w			-$3c(a0),d2					;Checks if at legal line
+	bgt.s			getnoteinumpos_exit
+	btst			#15,d1						;Check if track is negative
+	bne.s			getnoteinumpos_exit
+	btst			#15,d2						;Check if line is negative
+	bne.s			getnoteinumpos_exit
+
+	mulu			d3,d2
+
+	add.l			d2,d1
+	lsl.l			#2,d1							;4 bytes between each note or inum
+	add.l			d1,a0
+
+	rts
+
+getnoteinumpos_exit:
+	moveq			#0,d3
+	rts
+
+
+
+_setinum:
+	movem.l		d2/d3,-(sp)
+	bsr.s			getnoteinumpos
+	tst.l			d3
+	beq.s			setinum_exit
+	move.b		d0,1(a0)
+setinum_exit:
+	movem.l		(sp)+,d2/d3
+	rts
+
+
+_getinum:
+	movem.l		d2/d3,-(sp)
+	moveq			#0,d0
+	bsr.s			getnoteinumpos
+	tst.l			d3
+	beq.s			getinum_exit
+	move.b		1(a0),d0
+getinum_exit:
+	movem.l		(sp)+,d2/d3
+	rts
+
+
+
+;	Used registers for _sendrexx:
+;	A6 - exec.library
+;	A5 - My message-port
+;	A3 - Arexx-message
+;	A1 - Octa-port name
+;	D4 - Return-message
+
+_sendrexx:
+	;bsr.s			_freeresult							;Frees the last resultstring, if any
+	movem.l		d4/a3/a5-a6,-(sp)
+
+	moveq			#0,d4									;If something goes wrong.
+
+	move.l		4.w,a6
+
+	jsr			-$29a(a6)							;Creates a message-port
+	tst.l			d0
+	beq.s			exit
+	move.l		d0,a5
+
+	lea			arexxMsg_end(pc),a3				;The end of the message
+	moveq			#31,d0								;Reset arexxMsg to nulls. Don't know if this is necesarry, but...
+loop:
+	clr.l			-(a3)									;A3 will eventullly be 'ArexxMsg'
+	dbra			d0,loop
+
+	move.l		a5,$e(a3)							;Set replyport
+	move.w		#$80,$12(a3)						;Rexx-msg length
+;	move.l		#0,$6c(a3)							;Extension. (f.ex .rexx, .omed, etc.)
+;	move.l		#0,$70(a3)							;Host
+	move.l		#$01020000,$1c(a3)				;Set the action-type. (message | return)
+	move.l		d6,$28(a3)							;Put the argument into the message
+
+	jsr			-120(a6)								;Disable interrupts
+
+	lea			octaportname(pc),a1				;Finds the octarexx-port
+	jsr			-390(a6)
+	tst.l			d0
+	beq.s			could_not_find_port
+
+	move.l		d0,a0									;Port to send to
+	move.l		a3,a1									;Message to send
+	jsr			-366(a6)								;Sends the message
+
+	jsr			-126(a6)								;Enable interrupts
+
+	move.l		a5,a0									;Waits for reply
+	jsr			-$180(a6)
+
+	move.l		36(a3),d4							;Gets the result2
+
+
+close_port:
+	move.l		a5,a0
+	jsr			-$2a0(a6)
+
+
+exit:
+	move.l		d4,d0
+	movem.l		(sp)+,d4/a3/a5-a6
+
+	rts													;Finished!
+
+could_not_find_port:
+	jsr			-126(a6)								;Enable interrupts
+	bra.s			close_port
+
+octaportname:
+	dc.b			"OCTAMED_REXX",0
+
+	dc.b			0										;Simulated seka-function: 'Even'
+
+
+
+;	Used registers in getoctabase:
+;	A6 - exec.library
+;	A5 - My message-port
+;	A3 - NSM-message
+;	A1 - NSM-port
+
+_getoctabase:
+
+	movem.l		d4/a3/a5-a6,-(sp)
+
+	moveq			#0,d4
+
+	move.l		4.w,a6
+
+	jsr			-$29a(a6)							;Creates a message-port
+	tst.l			d0
+	beq.s			exit
+	move.l		d0,a5
+
+	lea			NSMMessage(pc),a3
+
+	move.l		d0,14(a3)							;Set the replyport for the message
+
+	jsr			-120(a6)								;Disable interrupts
+
+
+	lea			nsmportname(pc),a1				;Finds the NSM-port
+	jsr			-390(a6)
+	tst			d0
+	beq.s			could_not_find_port
+
+
+	move.l		d0,a0									;Sends the message
+	move.l		a3,a1
+	jsr			-366(a6)
+
+
+	jsr			-126(a6)								;Enable interrupts
+
+
+	move.l		a5,a0									;Waits for reply
+	jsr			-$180(a6)
+
+	move.l		20(a3),d4
+	add.l			#$b00e,d4
+;	lea			octabase(pc),a1
+;	move.l		d4,(a1)
+
+	bra.s			close_port
+
+
+
+;octabase:
+;	dc.l			0
+
+nsmportname:
+	dc.b			"nsmport",0
+
+
+_getcurrtrack:
+;	move.l		octabase(pc),a0
+	move.w		$bf6(a0),d0
+	rts
+
+_getcurrline:
+;	move.l		octabase(pc),a0
+	move.w		-$2d6(a0),d0
+	rts
+
+_getcurrblock:
+;	move.l		octabase(pc),a0
+	move.w		-$2dc(a0),d0
+	rts
+
+
+arexxMsg:													;An ArexxMsg-structure
+NSMMessage:													;An NSMMessage-structure.
+	;Structure message
+	 ;Structure Node
+	  dc.l		  0			;struct node *ln_succ
+	  dc.l		  0			;struct node *ln_pred
+	  dc.b		  5			;UBYTE ln_type=NT_MESSAGE
+	  dc.b		  0			;UBYTE priority
+	  dc.l		  0			;char *ln_Name
+	 dc.l			 0			;struct MsgPort *mn_replyport
+	 dc.w			24			;UWORD mn_Length
+
+
+	dc.l			0			;In the NSMMessage-structure: UWORD *Octa_addr
+;End of NSM-message structure. Length: 24 bytes
+
+	dc.l			0
+rm_Action:
+	dc.l			0
+	dc.l			0				;Result1 (error-messages and such)
+result2:
+	dc.l			0				;Result2 (result-string)
+rm_Args:
+	dc.l			0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	dc.l			0
+	dc.l			0
+	dc.l			0
+	dc.l			0
+	dc.l			0
+rm_avail:
+	dc.l			0
+arexxMsg_end:
+
+;End of ArexxMsg, Length: 128 bytes
+
+
+
+
+	END

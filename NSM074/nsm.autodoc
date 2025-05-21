@@ -1,0 +1,699 @@
+
+
+This is the descriptions on the functions and macros
+that octacontrol.a and nsm.h V0.74 gives you. Allso useful for
+assembler-programmers. Written in autodoc-style.
+Written by Kjetil S. Matheussen
+Last updated: 19.2.99.
+
+
+
+
+----------------------------------------------------------------
+extern OCTABASE __asm getoctabase(void);
+Description:
+Arguments:
+Result:			A pointer to the memory-space allocated by Octamed.
+Comments:		Only call this once! It wont work more than once
+					from the same program.
+Example:
+
+
+----------------------------------------------------------------
+extern BLOCBASE __asm getblockbase(register __a0 OCTABASE octabase,register __d6 int block);
+Description:
+Arguments:		octabase=pointer to a memoryfraction of octamed
+					block=the block.
+Result:			Pointer to the first note at line 0 track 0.
+					Returns a 0 if failed.
+Comments:
+Example:
+
+----------------------------------------------------------------
+#define updateeditor(a) if(getlinehighlight(a,0)){sendrexx("ED_HIGHLIGHTLINE 0 ON");}else{sendrexx("ED_HIGHLIGHTLINE 0 OFF");}
+Description:	A macro that updates the editor. You need
+					to do this because the functions provided
+					in octacontrol.a only manipulates the memory.
+					BTW: I don't know if this is the best way
+					to update the editor, but anyway its quite
+					good.
+Argumets:		a=octamedpointer
+
+----------------------------------------------------------------
+extern char __asm *sendrexx(register __d6 char *rexxcommand);
+Description:	Send an arexx-message to the OCTAMED_REXX-port.
+Arguments:		rexxcommand=a string which contains the command
+Result:			The resultsstring received from the OCTAMED_REXX-port
+					If the command doesn't return anything, the result
+					will be 0.
+Comments:		You don't need to allocate memory for the result-string.
+					OCTAMED_REXX does this for you.
+Example:			result=sendrexx("VE_OCTAMED")
+					result will now be like "7.08c".
+
+
+----------------------------------------------------------------
+#define resultstringfalse(a) (a[0]=='0' && a[1]==0)
+Description:	A macro that returns FALSE if the resultstring
+					of a sendrexx-commando is FALSE.
+Arguments:		a=resultstring
+
+
+
+----------------------------------------------------------------
+#define resultstringtrue(a) (a[0]!='0' || a[1]!=0)
+Description:	A macro that returns TRUE if the resultstring
+					of a sendrexx-commando is TRUE.
+Arguments:		a=resultstring
+
+
+----------------------------------------------------------------
+extern int __asm freeresult(void);
+Description:	Frees the allocated memory for a resultstring made
+					by OCTAMED_REXX.
+Arguments:
+Result:			I'm not shure. Probably 0 if failed.
+Comments:		Sendrexx() calls this function everitime its called,
+					so you only need to call it if the last sendrexx-
+					command you use returns a string. If you forget
+					to call this command, you will have a memory-loss
+					on a few bytes.
+Example:
+					int main(void){
+						char *result;
+						result=sendrexx("VE_OCTAMED_REXX");
+						result=sendrexx("VE_OCTAMED");
+						freeresult();
+						return(0);
+					}
+
+
+----------------------------------------------------------------
+extern int __asm setnote(register __a0 BLOCKBASE blockbase,register __d1 UWORD track, register __d2 UWORD line, register __d0 UWORD note);
+Description:
+Arguments:		blockbase=pointer received from the getblockbase() command.
+					track=track,line=line,note=note (0=-,1=C,2=C#,etc.)
+Result:
+Comments:		This is a safe command. You can send anyting you want, and eiter
+					your plug-in or octamed will crash.
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getnote(register __a0 BLOCKBASE blockbase,register __d1 UWORD track, register __d2 UWORD line);
+Description:
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern int __asm setinum(register __a0 BLOCKBASE blockbase,register __d1 UWORD track, register __d2 UWORD line, register __d0 UWORD note);
+Description:	Sets the instrument-number
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getinum(register __a0 BLOCKBASE blockbase,register __d1 UWORD track, register __d2 UWORD line);
+Description:
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern int __asm setcmdnum(register __a0 BLOCKBASE blockbase,register __d1 UWORD track, register __d2 UWORD line, register __d3 UWORD page, register __d0 UWORD note);
+Description:
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getcmdnum(register __a0 BLOCKBASE blockbase,register __d1 WORD track, register __d2 UWORD line, register __d3 UWORD page);
+Description:
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern int __asm setcmdlvl(register __a0 BLOCKBASE blockbase,register __d1 UWORD track, register __d2 UWORD line, register __d3 UWORD page, register __d0 UWORD note);
+Description:
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getcmdlvl(register __a0 BLOCKBASE blockbase,register __d1 UWORD track, register __d2 UWORD line, register __d3 UWORD page);
+Description:
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern int __asm getmed(register __d4 int edpart,register __a0 BLOCKBASE blockbase,register __d1 UWORD track, register __d2 UWORD line, register __d3 UWORD page);
+Description:
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern int __asm setmed(register __d4 int edpart,register __a0 BLOCKBASE blockbase, register __d1 UWORD track, register __d2 UWORD line, register __d3 UWORD page, register __d0 UWORD data);
+Description:
+Arguments:
+Result:
+Comments:
+Example:
+
+
+
+----------------------------------------------------------------
+extern char  __asm *getblockname(register __a0 BLOCKBASE blockbase);
+Description:
+Arguments:
+Result:			String whith th name of the block
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getnumlines(register __a0 BLOCKBASE blockbase);
+Description:
+Arguments:
+Result:			Number of lines in the block
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getnumtracks(register __a0 BLOCKBASE blockbase);
+Description:
+Arguments:
+Result:			Number of tracks in the block
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getnumpages(register __a0 BLOCKBASE blockbase);
+Description:
+Arguments:
+Result:			Number of cmd-pages in the block
+Comments:
+Example:
+
+----------------------------------------------------------------
+extern UWORD __asm getnumblocks(register __a0 OCTABASE octabase);
+Description:
+Arguments:
+Result:			Number of blocks in the song.
+Comments:		I don't know what this function returns if you have more than
+					one song loaded at once. This goes for a lot of other functions
+					too. If anyone bother to check it out, I would be glad to
+					know cause I don't use multi-song modules.
+Example:
+
+
+----------------------------------------------------------------
+extern int __asm istrackon(register __a0 OCTABASE octabase, UWORD track);
+Description:	See the octarexx-guide.
+Result:			Returns 1 if track is on, 0 if not.
+
+----------------------------------------------------------------
+extern int __asm isplaying(register __a0 OCTABASE octabase);
+Result:			Returns 1 if octamed is playing, 0 if not.
+
+----------------------------------------------------------------
+extern UWORD __asm getcurroctave(register __a0 OCTABASE);
+Description:	See the OP_GETKEYBOARDOCT function in the octarexx-guide.
+Note:				The main-control window need to be open, or have been
+					open before, to make this function work.
+
+----------------------------------------------------------------
+extern UWORD __asm getlinehighlight(register __a0 BLOCKBASE blockbase,register __d1 UWORD line);
+Description:
+Arguments:
+Result:			returns 1 if line is highlighted, 0 if not.
+Comments:
+Example:
+
+----------------------------------------------------------------
+extern __asm setlinehighlight(register __a0 UWORD *blockbase,register __d0 UWORD line);
+Description:
+Arguments:
+Result:
+Comments:		If you are going to move a highlightened line from one place to
+					another, use "setlinehighlight" first, and afterwards
+					"unsetlinehighlight". By doing this, you don't risk
+					that the assembler-functions use the sendrexx-command,
+					which slows down dramaticly.
+Example:
+
+
+----------------------------------------------------------------
+extern __asm getlinehighlight(register __a0 UWORD *blockbase,register __d0 UWORD line);
+Description:
+Arguments:
+Result:
+Comments:		If you are going to move a highlightened line from one place to
+					another, use "setlinehighlight" first, and afterwards
+					"unsetlinehighlight". By doing this, you don't risk
+					that the assembler-functions use the sendrexx-command,
+					which slows down dramaticly.
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm isranged(register __a0 OCTABASE octabase);
+Description:
+Arguments:
+Result:			Returns 1 if there is a range, 0 if not.
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getrangeendline(register __a0 OCTABASE octabase);
+Description:
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getrangeendtrack(register __a0 OCTABASE octabase);
+Description:
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getrangestartline(register __a0 OCTABASE octabase);
+Description:
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getrangestarttrack(register __a0 OCTABASE octabase);
+Description:
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getcurrtrack(register __a0 OCTABASE octabase);
+Description:
+Arguments:
+Result:			The current track
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getcurrline(register __a0 OCTABASE octabase);
+Description:
+Arguments:
+Result:			The current line
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getsubpos(register __a0 OCTABASE octabase);
+Description:	Returns where the cursor is placed on the current
+					line on the current track in the current block.
+Arguments:
+Result:			0 if at note,2 if at inum, 4 if at cmdnum, 8 if at cmdlvl
+					(well, you have to check this, I don't quite rember if
+					that was right, but I think so)
+Comments:		This function is not supported via octa-rexx! :)
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getcurrblock(register __a0 OCTABASE octabase);
+Description:	Returns the current block
+Arguments:
+Result:
+Comments:
+Example:			result=getcurrblock(ob);
+					If the current block is 1, result will be 1.
+					(same for all other blocks, ofcourse.)
+
+
+----------------------------------------------------------------
+extern UWORD __asm getcurrpage(register __a0 OCTABASE octabase);
+Description:	Returns the current block
+
+----------------------------------------------------------------
+#define getcurrblockbase(a) getblockbase(a,getcurrblock(a))
+Description:	A macro that returns a blockbasepointer to the current block.
+Arguments:		a=register __a0 OCTABASE octabase
+
+
+----------------------------------------------------------------
+extern SAMPLEBASE __asm getsamplebase(register __a0 OCTABASE octabase,register __d1 UWORD sample);
+Description:
+Arguments:		octabase=octabase,sample=instrument number
+Result:			Returns the startaddress of instrument number "sample"
+					Returns 0 if no sample loaded.
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern SAMPLEBASE __asm getcurrsamplebase(register __a0 OCTABASE octabase);
+Description:
+Arguments:
+Result:			Returns the startaddress of the current sample.
+					Returns 0 if no sample is loaded.
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+
+extern LONG __asm getsamplelength(register __a0 SAMPLEBASE samplebase);
+Description:
+Arguments:
+Result:			Length of the sample in bytes.
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getsample(register __a0 SAMPLEBASE samplebase,register __d1 ULONG offset);
+Description:	See the octamed-arexx guide.
+Arguments:
+Result:
+Comments:		This is not a so very fast function. If you
+					know what you are doing, you should read
+					the memory directly just by using the
+					getsamplebase or getcurrentsamplebase functions.
+Example:
+
+
+----------------------------------------------------------------
+extern void __asm setsample(register __a0 SAMPLEBASE samplebase,register __d6 ULONG offset,register __d0 WORD value);
+Description:	See the octamed-arexx guide.
+Arguments:
+Result:
+Comments:		This is a safe function. Should not
+					crash octamed if illegal arguments
+
+					This is not a so very fast function. If you
+					know what you are doing, you should write to
+					the memory directly just by using the
+					getsamplebase or getcurrentsamplebase functions.
+Example:
+
+
+----------------------------------------------------------------
+
+extern BYTE __asm getfinetune(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UBYTE __asm gethold(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+
+extern UBYTE __asm getdecay(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern BYTE __asm getdefaultpitch(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern int __asm getextendedpreset(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:			Returns 1 if set, 0 if not.
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UBYTE __asm getmidichannel(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern UWORD __asm getmidipreset(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern WORD __asm getcurrinstrument(register __a0 OCTABASE octabase);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern char __asm *getinname(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern int __asm getsuppressnoteonoff(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern BYTE __asm gettranspose(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern BYTE __asm getvolume(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern ULONG __asm getloopstart(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern ULONG __asm getlooplength(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern int __asm getloopstate(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern int __asm getlooppingpong(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern int __asm getdisable(register __a0 OCTABASE octabase,register __d1 UWORD samplenumber);
+Description:	See the octamed-guide
+Arguments:
+Result:
+Comments:
+Example:
+
+
+----------------------------------------------------------------
+extern char __asm *wordintostring_noconst(register __a0 char *inputstring,register __d1 int pos,register __d6 WORD number);
+Description:	Puts a 16bit number (WORD) into a string.
+Arguments:		inputstring=a string
+					pos=where you want you number to be placed
+					number=number
+Result:
+Comments:		Remember to allocate memory for the inputstring.
+					This function can allso be done with the sprintf-function,
+					but then you have to include a lot of start-up code
+					in your executable, which will make your program
+					some kb larger.
+Example:
+					result=wordintostring("ED_GOTO LINE      ",14,-50);
+					result will now be "ED_GOTO LINE -00050".
+
+
+----------------------------------------------------------------
+#define sendrexxword_noconst(a,b,c) sendrexx(wordintostring_noconst(a,b,c))
+Description:	A macro that sends the resultstring of the
+					wordintostring_noconst-function to the OCTAMED_REXX-port.
+
+
+----------------------------------------------------------------
+#define WORDLENGTHSTRING "      "
+#define wordintostring(a,b,c) wordintostring_noconst(a##WORDLENGTHSTRING##c,sizeof(a),b)
+Description:	A macro that eases up the wordintostring_noconst a bit.
+Arguments:		a=inputstring part 1
+					b=Number
+					c=inputstring part 2
+Comments:		a and c has to be constants!
+Examples:
+					result=wordintostring("ED_GOTO LINE ",-50,"");
+					result will now be "ED_GOTO LINE -00050".
+
+					result=wordintostring("ED_GOTO LINE ",-50,"6");
+					result will now be "ED_GOTO LINE -000506".
+
+----------------------------------------------------------------
+#define wordintostring2(a,b,c,d,e) [etc.]
+#define wordintostring3(a,b,c,d,e,f,g) [etc.]
+#define wordintostring4(a,b,c,d,e,f,g,h,i) [etc.]
+#define wordintostring5(a,b,c,d,e,f,g,h,i,j,k) [etc.]
+
+Description:	Macros that function the same way as wordintostring.
+Arguments:		a=string
+					b=number
+					c=string
+					d=number
+					e=string
+					f=number
+					g=string
+					h=number
+					i=string
+					j=number
+					k=string
+Result:			A string that looks like this: a##b##c##d##e##f##g##h##i##j##k
+
+----------------------------------------------------------------
+#define sendrexxword(a,b,c) sendrexx(wordintostring(a,b,c))
+Description:	A macro that sends the resultstring of the
+					wordintostring-macro to the OCTAMED_REXX-port.
+Comments:		a and c has to be constants!
+
+
+----------------------------------------------------------------
+#define sendrexxword2(a,b,c,d,e) sendrexx(wordintostring2(a,b,c,d,e))
+#define sendrexxword3(a,b,c,d,e,f,g) sendrexx(wordintostring3(a,b,c,d,e,f,g))
+#define sendrexxword4(a,b,c,d,e,f,g,h,i) sendrexx(wordintostring4(a,b,c,d,e,f,g,h,i))
+#define sendrexxword5(a,b,c,d,e,f,g,h,i,j,k) sendrexx(wordintostring4(a,b,c,d,e,f,g,h,i,j,k))
+Example:
+					sendrexxword5(
+						"ED_SETDATA BLOCK ",4," TRACK ",5," LINE ",6," PAGE ",6," CMDNUM ",8,""
+					);
+
+					/* Ofcourse, you should use the setcmdnum()-command
+						for this operation. But this is just an example of
+						the macro.
+					*/
+
+----------------------------------------------------------------
+extern int __asm stringtoint(register __d6 char *string);
+Description:	Extracts the first number in a string into an integer
+Arguments:
+Result:
+Comments:
+					This function can allso be done with the scanf-function
+					(and some other commands), but then you have to include
+					a lot of start-up code in your executable, which will
+					make your program some kb larger.
+Examples:
+					result=stringtoint("fdaøjgl-4343fsas");
+					result will now be -4343
+
+					result=stringtoint("53434");
+					result will now be 5343
+
+					result=stringtoint("");
+					result will now be 0
+
+					result=stringtoint("htrhtrs");
+					result will now be 0
+
+
+----------------------------------------------------------------
+#define sendrexxRI(a) stringtoint(sendrexx(a))
+Description:	A macro that sends the string a to the OCTAMED_REXX-port,
+					and returns an integer.
+
+----------------------------------------------------------------
+
+

@@ -1,0 +1,1094 @@
+;	Octacontrol.a - Assembler functions that
+;	lets you control the variable-space of
+;	octamed.
+;
+;	Version: 0.74
+;	Made by Kjetil S. Matheussen 19.2.98
+
+
+
+	xdef	_getblockbase
+
+	xdef	_getblockname
+	xdef	_getnumlines
+	xdef	_getnumtracks
+	xdef	_getnumpages
+	xdef	_getlinehighlight
+	xdef	_setlinehighlight
+	xdef	_unsetlinehighlight
+
+	xdef	_getmed
+	xdef	_setmed
+	xdef	_getcmdlvl
+	xdef	_setcmdlvl
+	xdef	_getcmdnum
+	xdef	_setcmdnum
+	xdef	_getinum
+	xdef	_setinum
+	xdef	_setnote
+	xdef	_getnote
+
+	xdef	_isranged
+	xdef	_getrangeendline
+	xdef	_getrangeendtrack
+	xdef	_getrangestartline
+	xdef	_getrangestarttrack
+
+	xdef	_getcurrtrack
+	xdef	_getcurrline
+	xdef	_getcurrblock
+	xdef	_getcurrpage
+	xdef	_getsubpos
+	xdef	_getnumblocks
+	xdef	_istrackon
+	xdef	_isplaying
+	xdef	_getcurroctave
+
+	xdef	_getsamplebase
+	xdef	_getcurrsamplebase
+	xdef	_getsamplelength
+	xdef	_getsample
+	xdef	_setsample
+
+	xdef	_getfinetune
+	xdef	_gethold
+	xdef	_getdecay
+	xdef	_getdefaultpitch
+	xdef	_getextendedpreset
+	xdef	_getmidichannel
+	xdef	_getmidipreset
+	xdef	_getcurrinstrument
+	xdef	_getsuppressnoteonoff
+	xdef	_getinname
+	xdef	_gettranspose
+	xdef	_getvolume
+	xdef	_getloopstart
+	xdef	_getlooplength
+	xdef	_getloopstate
+	xdef	_getlooppingpong
+	xdef	_getdisable
+
+	xdef	_freeresult
+	xdef	_sendrexx
+
+	xdef	_getoctabase
+
+	xdef	_wordintostring_noconst
+	xdef	_stringtoint
+
+	section	text,code
+
+
+_getblockbase:
+	move.l	d6,-(sp)
+;	move.l	octabase(PC),a0
+	sub.l		#$ae86,a0
+	move.l	(a0),a0
+	rol.l		#2,d6
+	add.l		d6,a0
+	move.l	(a0),d0
+	add.l		#$3e,d0
+	move.l	(sp)+,d6
+	rts
+
+
+_getblockname:
+	move.l		-$3a(a0),d0
+	rts
+
+_getnumlines:
+	move.w		-$3c(a0),d0
+	addq.w		#1,d0											;This is quite stupid, but its the
+																	;way the OCTAMED_REXX port does it.
+	rts
+
+_getnumtracks:
+	move.w		-$3e(a0),d0
+	rts
+
+_getnumpages:
+	move.w		-$4(a0),d0
+	rts
+
+_getlinehighlight:
+	moveq			#0,d0
+
+	cmp.w			-$3c(a0),d1									;Checks if at legal line
+	bgt.s			failed_linehighlight
+	btst			#15,d1										;Check if line is negative
+	bne.s			failed_linehighlight
+
+	move.l		-$10(a0),a0
+	cmp.l			#0,a0											;This address does only exist if there are any
+	beq.s			failed_linehighlight						;highlightened lines
+	add.l			d1,a0
+	move.b		(a0),d0
+
+failed_linehighlight:
+	rts
+
+_setlinehighlight:
+	cmp.w			-$3c(a0),d0									;Checks if at legal line
+	bgt.s			failed_linehighlight
+	btst			#15,d0										;Check if line is negative
+	bne.s			failed_linehighlight
+
+	move.l		-$10(a0),a0
+	cmp.l			#0,a0											;This address does only exist if there are any
+	beq.s			setfirsthighlight							;highlightened lines. If not, the
+																	;line has to be highligthened via the
+																	;OCTAMED_REXX arexx-port.
+	add.l			d0,a0
+	move.b		#1,(a0)										;Highlight the line directly. Use the
+																	;"updateeditor"-command to view the result.
+	rts
+
+
+setfirsthighlight:											;Highlight the line via the arexx-port.
+	move.l		d6,-(SP)
+	lea			manualset(PC),a0
+	moveq			#23,d1
+	moveq			#0,d6
+	move.l		d0,d6
+	bsr			_wordintostring_noconst
+	lea			manualset(PC),a0
+	move.l		a0,d6
+	bsr			_sendrexx
+	move.l		(sp)+,d6
+	rts
+
+manualset:
+	dc.b			"ED_HIGHLIGHTLINE LINE  00000 ON",0
+
+
+
+_unsetlinehighlight:
+	moveq			#0,d1
+	btst			#15,d0										;Check if line is negative
+	bne.s			failed_linehighlight
+	move.w		-$3c(a0),d1									;Number of lines.
+	cmp.w			d1,d0											;Checks if at legal line
+	bgt.s			failed_linehighlight
+
+	move.l		-$10(a0),a0
+	cmp.l			#0,a0
+	beq.s			failed_linehighlight						;All lines are unhighlightened allready.
+
+	move.l		a0,a1
+
+findfirsthighlight:
+	cmp.b			#1,(a1)
+	beq.s			findsecondhighlight
+	addq.l		#1,a1
+	dbra			d1,findfirsthighlight
+	bra.s			unsetlasthighlight						;This should be impossible, but you never know.
+
+findsecondhighlight:
+	subq			#1,d1
+
+findsecondhighlightloop:
+	addq.l		#1,a1
+	cmp.b			#1,(a1)
+	beq.s			unsetdirectly
+	dbra			d1,findsecondhighlightloop
+
+	bra.s			unsetlasthighlight
+
+
+unsetdirectly:
+	add.l			d0,a0
+	move.b		#0,(a0)										;Unhighlight the line directly. Use the
+																	;"updateeditor"-command to view the result.
+	rts
+
+
+unsetlasthighlight:											;Unhighlight the line via the arexx-port.
+	move.l		d6,-(SP)
+	lea			manualunset(PC),a0
+	moveq			#23,d1
+	moveq			#0,d6
+	move.l		d0,d6
+	bsr			_wordintostring_noconst
+	lea			manualunset(PC),a0
+	move.l		a0,d6
+	bsr			_sendrexx
+	move.l		(sp)+,d6
+	rts
+
+manualunset:
+	dc.b			"ED_HIGHLIGHTLINE LINE  00000 OFF",0
+
+;even
+	dc.b			0
+
+_getmed:
+	cmp.b			#0,d4
+	beq			_getnote
+
+	cmp.b			#1,d4
+	beq			_getinum
+
+	cmp.b			#2,d4
+	beq			_getcmdnum
+
+	cmp.b			#3,d4
+	beq.s			_getcmdlvl
+
+	rts											;Failed
+
+_setmed:
+	cmp.b			#0,d4
+	beq			_setnote
+
+	cmp.b			#1,d4
+	beq			_setinum
+
+	cmp.b			#2,d4
+	beq.s			_setcmdnum
+
+	cmp.b			#3,d4
+	beq.s			_setcmdlvl
+
+	moveq			#0,d0							;Failed
+	rts
+
+_setcmdlvl:
+	tst.l			d3								;If page is zero
+	beq.s			setcmdlvl_exit2
+
+	cmp.w			#1,d3
+	bne.s			setcmdlvl_lpage			;If it's not at page 1.
+
+	movem.l		d2/d3,-(sp)
+	bsr			getnoteinumpos
+	tst.l			d3
+	beq.s			setcmdlvl_exit
+	move.b		d0,3(a0)
+setcmdlvl_exit:
+	movem.l		(sp)+,d2/d3
+setcmdlvl_exit2:
+	rts
+
+setcmdlvl_lpage:
+	movem.l		d2/d3-d5,-(sp)
+	bsr			getcmd_lpage
+	tst.l			d4
+	beq.s			setcmdlvl_lpage_exit
+	move.b		d0,1(a0)
+setcmdlvl_lpage_exit:
+	movem.l		(sp)+,d2/d3-d5
+	rts
+
+
+
+_getcmdlvl:
+	moveq			#0,d0
+	tst.l			d3								;If page is zero
+	beq.s			getcmdlvl_exit2
+
+	cmp.w			#1,d3
+	bne.s			getcmdlvl_lpage			;If it's not at page 1.
+
+	movem.l		d2/d3,-(sp)
+	bsr			getnoteinumpos
+	tst.l			d3
+	beq.s			getcmdlvl_exit
+	move.b		3(a0),d0
+getcmdlvl_exit:
+	movem.l		(sp)+,d2/d3
+getcmdlvl_exit2:
+	rts
+
+getcmdlvl_lpage:
+	movem.l		d2/d3-d5,-(sp)
+	bsr.s			getcmd_lpage
+	tst.l			d4
+	beq.s			getcmdlvl_lpage_exit
+	move.b		1(a0),d0
+getcmdlvl_lpage_exit:
+	movem.l		(sp)+,d2/d3-d5
+	rts
+
+
+
+
+_setcmdnum:
+	tst.l			d3								;If page is zero
+	beq.s			setcmdnum_exit2
+
+	cmp.w			#1,d3
+	bne.s			setcmdnum_lpage			;If it's not at page 1.
+
+	movem.l		d2/d3,-(sp)
+	bsr			getnoteinumpos
+	tst.l			d3
+	beq.s			setcmdnum_exit
+	move.b		d0,2(a0)
+setcmdnum_exit:
+	movem.l		(sp)+,d2/d3
+setcmdnum_exit2:
+	rts
+
+setcmdnum_lpage:
+	movem.l		d2/d3-d5,-(sp)
+	bsr.s			getcmd_lpage
+	tst.l			d4
+	beq.s			setcmdnum_lpage_exit
+	move.b		d0,(a0)
+setcmdnum_lpage_exit:
+	movem.l		(sp)+,d2/d3-d5
+	rts
+
+
+
+
+_getcmdnum:
+	moveq			#0,d0
+	tst.l			d3								;If page is zero (illegal)
+	beq.s			getcmdnum_exit2
+
+	cmp.w			#1,d3
+	bne.s			getcmdnum_lpage			;If it's not at page 1.
+
+	movem.l		d2/d3,-(sp)
+	bsr.s			getnoteinumpos
+	tst.l			d3
+	beq.s			getcmdnum_exit
+	move.b		2(a0),d0
+getcmdnum_exit:
+	movem.l		(sp)+,d2/d3
+getcmdnum_exit2:
+	rts
+
+getcmdnum_lpage:
+	movem.l		d2/d3-d5,-(sp)
+	bsr.s			getcmd_lpage
+	tst.l			d4
+	beq.s			getcmdnum_lpage_exit
+	move.b		(a0),d0
+getcmdnum_lpage_exit:
+	movem.l		(sp)+,d2/d3-d5
+	rts
+
+
+getcmd_lpage:
+	move.w		-$3e(a0),d4					;Number of tracks in block
+
+	cmp.w			d4,d1							;Checks if at legal track
+	bge.s			getcmd_lpage_exit
+	cmp.w			-$3c(a0),d2					;Checks if at legal line
+	bgt.s			getcmd_lpage_exit
+	btst			#15,d1						;Check if track is negative
+	bne.s			getcmd_lpage_exit
+	btst			#15,d2						;Check if line is negative
+	bne.s			getcmd_lpage_exit
+
+	btst			#15,d3						;Check if page is negative
+	bne.s			getcmd_lpage_exit
+
+	subq.w		#2,d3							;Have to do this
+	move.w		-$4(a0),d5					;Number of pages in the block
+	cmp.w			d5,d3							;Checks if page is legal
+	bge.s			getcmd_lpage_exit
+	btst			#15,d3						;Check if page is negative
+	bne.s			getcmd_lpage_exit
+
+	move.l		-8(a0),a0
+	lsl.l			#2,d3
+	add.l			d3,a0
+	move.l		(a0),a0
+
+	mulu			d4,d2
+	add.l			d2,d1
+	lsl.l			#1,d1							;Two bytes between each cmdnum or cmdlvl
+	add.l			d1,a0
+
+	rts
+
+getcmd_lpage_exit:
+	moveq			#0,d4
+	rts
+
+
+
+
+getnoteinumpos:
+
+	move.w		-$3e(a0),d3					;Number of tracks in block
+
+	cmp.w			d3,d1							;Checks if at legal track
+	bge.s			getnoteinumpos_exit
+	cmp.w			-$3c(a0),d2					;Checks if at legal line
+	bgt.s			getnoteinumpos_exit
+	btst			#15,d1						;Check if track is negative
+	bne.s			getnoteinumpos_exit
+	btst			#15,d2						;Check if line is negative
+	bne.s			getnoteinumpos_exit
+
+	mulu			d3,d2
+
+	add.l			d2,d1
+	lsl.l			#2,d1							;4 bytes between each note or inum
+	add.l			d1,a0
+
+	rts
+
+getnoteinumpos_exit:
+	moveq			#0,d3
+	rts
+
+
+
+
+_setinum:
+	movem.l		d2/d3,-(sp)
+	bsr.s			getnoteinumpos
+	tst.l			d3
+	beq.s			setinum_exit
+	move.b		d0,1(a0)
+setinum_exit:
+	movem.l		(sp)+,d2/d3
+	rts
+
+
+_getinum:
+	movem.l		d2/d3,-(sp)
+	moveq			#0,d0
+	bsr.s			getnoteinumpos
+	tst.l			d3
+	beq.s			getinum_exit
+	move.b		1(a0),d0
+getinum_exit:
+	movem.l		(sp)+,d2/d3
+	rts
+
+
+_setnote:
+	movem.l		d2/d3,-(sp)
+	bsr.s			getnoteinumpos
+	tst.l			d3
+	beq.s			setnote_exit
+	move.b		d0,(a0)
+setnote_exit:
+	movem.l		(sp)+,d2/d3
+	rts
+
+
+_getnote:
+	movem.l		d2/d3,-(sp)
+	moveq			#0,d0
+	bsr.s			getnoteinumpos
+	tst.l			d3
+	beq.s			getnote_exit
+	move.b		(a0),d0
+getnote_exit:
+	movem.l		(sp)+,d2/d3
+	rts
+
+;a0=octabase,d1=sample
+_getsamplebase:
+	sub.l			#$af86,a0
+	rol.w			#2,d1
+	add.l			d1,a0
+	move.l		(a0),d0
+	tst.l			d0
+	beq.s			getsamplebase_failed
+	addq.l		#6,d0
+getsamplebase_failed:
+	rts
+
+_getcurrsamplebase:
+	add.l			#$160e,a0
+	move.l		(a0),a0
+	move.l		(a0),d0
+	beq.s			getsamplebase_failed
+	addq.l		#6,d0
+	rts
+
+_getsamplelength:
+	move.l		-6(a0),d0
+	rts
+
+_getsample:
+	lsl.l			#1,d1
+	add.l			d1,a0
+	moveq			#0,d0
+	move.w		(a0),d0
+	rts
+
+;a0=samplebase,d0=value,d6=offset
+_setsample:
+	cmp.l			#0,a0
+	beq.s			setsample_failed
+	lsl.l			#1,d6
+	move.l		-6(a0),d1
+	cmp.l			d1,d6
+	bge.s			setsample_failed
+	add.l			d6,a0
+	move.w		d0,(a0)
+	rts
+setsample_failed:
+	moveq			#0,d0
+	rts
+
+;a0=octabase,d1=sample
+_getfinetune:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	moveq			#0,d0
+	move.b		51(a0),d0
+	rts
+
+_gethold:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	moveq			#0,d0
+	move.b		48(a0),d0
+	rts
+
+_getdecay:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	moveq			#0,d0
+	move.b		49(a0),d0
+	rts
+
+_getdefaultpitch:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	moveq			#0,d0
+	move.b		54(a0),d0
+	rts
+
+_getextendedpreset:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	move.b		44(a0),d1
+	btst			#6,d1
+	bne			set
+	moveq			#0,d0
+	rts
+
+_getmidichannel:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	moveq			#0,d0
+	move.b		44(a0),d0
+	bclr.l		#6,d0
+	bclr.l		#7,d0
+	rts
+
+_getmidipreset:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	moveq			#0,d0
+	move.w		52(a0),d0
+	rts
+
+_getinname:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	move.l		a0,d0
+	rts
+
+_getcurrinstrument:
+	add.l			#$160e,a0
+	move.l		(a0),d0
+	sub.l			#$c594,a0
+	move.l		a0,d1
+	sub.l			d1,d0
+	lsr.l			#2,d0
+	rts
+
+_getsuppressnoteonoff:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	move.b		44(a0),d1
+	btst			#7,d1
+	bne.s			set
+	moveq			#0,d0
+	rts
+
+_gettranspose:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	moveq			#0,d0
+	move.b		50(a0),d0
+	rts
+
+_getvolume:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	moveq			#0,d0
+	move.b		46(a0),d0
+	rts
+
+_getloopstart:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	moveq			#0,d0
+	move.l		40(a0),d0
+	rts
+	
+_getlooplength:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	moveq			#0,d0
+	move.l		56(a0),d0
+	rts
+
+_getloopstate:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	move.b		45(a0),d1
+	btst			#0,d1
+	bne.s			set
+	moveq			#0,d0
+	rts
+set:
+	moveq			#1,d0
+	rts
+
+_getlooppingpong:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	move.b		45(a0),d1
+	btst			#3,d1
+	bne.s			set
+	moveq			#0,d0
+	rts
+
+_getdisable:
+	sub.l			#$af86,a0
+	move.l		(a0),a0
+	subq.w		#1,d1
+	lsl.w			#6,d1
+	add.l			d1,a0
+	move.b		45(a0),d1
+	btst			#2,d1
+	bne.s			set
+	moveq			#0,d0
+	rts
+
+_freeresult												;Releases the memory occopied when making the result-string.
+	move.l	result2(pc),a1
+	cmp		#0,a1
+	beq.s		notastring
+	subq.l	#8,a1
+	move.l	(a1),d0
+	move.l	a6,-(sp)
+	move.l	4.w,a6
+	jsr		-210(a6)
+	lea		result2(pc),a1
+	move.l	#0,8(a1)									;take away address from arexx-message.
+															;(probably not necesarry)
+	move.l	(sp)+,a6
+notastring:
+	rts
+
+
+
+;	Used registers for _sendrexx:
+;	A6 - exec.library
+;	A5 - My message-port
+;	A3 - Arexx-message
+;	A1 - Octa-port name
+;	D4 - Return-message
+
+_sendrexx:
+	bsr.s			_freeresult							;Frees the last resultstring, if any
+	movem.l		d4/a3/a5-a6,-(sp)
+
+	moveq			#0,d4									;If something goes wrong.
+
+	move.l		4.w,a6
+
+	jsr			-$29a(a6)							;Creates a message-port
+	tst.l			d0
+	beq.s			exit
+	move.l		d0,a5
+
+	lea			arexxMsg_end(pc),a3				;The end of the message
+	moveq			#31,d0								;Reset arexxMsg to nulls. Don't know if this is necesarry, but...
+loop:
+	clr.l			-(a3)									;A3 will eventullly be 'ArexxMsg'
+	dbra			d0,loop
+
+	move.l		a5,$e(a3)							;Set replyport
+	move.w		#$80,$12(a3)						;Rexx-msg length
+;	move.l		#0,$6c(a3)							;Extension. (f.ex .rexx, .omed, etc.)
+;	move.l		#0,$70(a3)							;Host
+	move.l		#$01020000,$1c(a3)				;Set the action-type. (message | return)
+	move.l		d6,$28(a3)							;Put the argument into the message
+
+	jsr			-120(a6)								;Disable interrupts
+
+	lea			octaportname(pc),a1				;Finds the octarexx-port
+	jsr			-390(a6)
+	tst.l			d0
+	beq.s			could_not_find_port
+
+	move.l		d0,a0									;Port to send to
+	move.l		a3,a1									;Message to send
+	jsr			-366(a6)								;Sends the message
+
+	jsr			-126(a6)								;Enable interrupts
+
+	move.l		a5,a0									;Waits for reply
+	jsr			-$180(a6)
+
+	move.l		36(a3),d4							;Gets the result2
+
+
+close_port:
+	move.l		a5,a0
+	jsr			-$2a0(a6)
+
+
+exit:
+	move.l		d4,d0
+	movem.l		(sp)+,d4/a3/a5-a6
+
+	rts													;Finished!
+
+could_not_find_port:
+	jsr			-126(a6)								;Enable interrupts
+	bra.s			close_port
+
+octaportname:
+	dc.b			"OCTAMED_REXX",0
+
+	dc.b			0										;Simulated seka-function: 'Even'
+
+
+
+;	Used registers in getoctabase:
+;	A6 - exec.library
+;	A5 - My message-port
+;	A3 - NSM-message
+;	A1 - NSM-port
+
+_getoctabase:
+
+	movem.l		d4/a3/a5-a6,-(sp)
+
+	moveq			#0,d4
+
+	move.l		4.w,a6
+
+	jsr			-$29a(a6)							;Creates a message-port
+	tst.l			d0
+	beq.s			exit
+	move.l		d0,a5
+
+	lea			NSMMessage(pc),a3
+
+	move.l		d0,14(a3)							;Set the replyport for the message
+
+	jsr			-120(a6)								;Disable interrupts
+
+
+	lea			nsmportname(pc),a1				;Finds the NSM-port
+	jsr			-390(a6)
+	tst			d0
+	beq.s			could_not_find_port
+
+
+	move.l		d0,a0									;Sends the message
+	move.l		a3,a1
+	jsr			-366(a6)
+
+
+	jsr			-126(a6)								;Enable interrupts
+
+
+	move.l		a5,a0									;Waits for reply
+	jsr			-$180(a6)
+
+	move.l		20(a3),d4
+	add.l			#$b00e,d4
+;	lea			octabase(pc),a1
+;	move.l		d4,(a1)
+
+	bra.s			close_port
+
+
+
+;octabase:
+;	dc.l			0
+
+nsmportname:
+	dc.b			"nsmport",0
+
+
+_isranged:
+	moveq			#0,d0
+;	move.l		octabase(pc),a0
+	move.b		$f76(a0),d0
+	rts
+
+_getrangeendline:
+;	move.l		octabase(pc),a0
+	move.w		$f6c(a0),d0
+	rts
+
+_getrangeendtrack:
+;	move.l		octabase(pc),a0
+	move.w		$f66(a0),d0
+	rts
+
+_getrangestartline:
+;	move.l		octabase(pc),a0
+	move.w		$f6a(a0),d0
+	rts
+
+_getrangestarttrack:
+;	move.l		octabase(pc),a0
+	move.w		$f64(a0),d0
+	rts
+
+_getcurrtrack:
+;	move.l		octabase(pc),a0
+	move.w		$bf6(a0),d0
+	rts
+
+_getcurrline:
+;	move.l		octabase(pc),a0
+	move.w		-$2d6(a0),d0
+	rts
+
+_getcurrblock:
+;	move.l		octabase(pc),a0
+	move.w		-$2dc(a0),d0
+	rts
+
+_getcurrpage:
+	move.w		-$2de(a0),d0
+	addq.w		#1,d0
+	rts
+
+_getsubpos:
+;	move.l		octabase(pc),a0
+	move.w		$bf8(a0),d0
+	rts
+
+_getnumblocks:
+;	move.l		octabase(pc),a0
+	move.w		-$6996(a0),d0
+	rts
+
+;a0=octabase,d1=track
+_istrackon:
+	sub.l			#$ae74,a0
+	add.l			d1,a0
+	moveq			#0,d0
+	move.b		(a0),d0
+	rts
+
+;a0=octabase
+_isplaying:
+	moveq			#0,d0
+	move.b		-$94(a0),d0
+	rts
+
+;a0=octabase
+_getcurroctave:
+	sub.l		#$6b7c,a0
+	move.l	(a0),a0
+	move.w	$10a6(a0),d0
+	rts
+
+
+arexxMsg:													;An ArexxMsg-structure
+NSMMessage:													;An NSMMessage-structure.
+	;Structure message
+	 ;Structure Node
+	  dc.l		  0			;struct node *ln_succ
+	  dc.l		  0			;struct node *ln_pred
+	  dc.b		  5			;UBYTE ln_type=NT_MESSAGE
+	  dc.b		  0			;UBYTE priority
+	  dc.l		  0			;char *ln_Name
+	 dc.l			 0			;struct MsgPort *mn_replyport
+	 dc.w			24			;UWORD mn_Length
+
+
+	dc.l			0			;In the NSMMessage-structure: UWORD *Octa_addr
+;End of NSM-message structure. Length: 24 bytes
+
+	dc.l			0
+rm_Action:
+	dc.l			0
+	dc.l			0				;Result1 (error-messages and such)
+result2:
+	dc.l			0				;Result2 (result-string)
+rm_Args:
+	dc.l			0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	dc.l			0
+	dc.l			0
+	dc.l			0
+	dc.l			0
+	dc.l			0
+rm_avail:
+	dc.l			0
+arexxMsg_end:
+
+;End of ArexxMsg, Length: 128 bytes
+
+
+
+_wordintostring_noconst:
+	move.l	d6,-(sp)
+	move.l	a0,a1
+
+	addq.w	#5,d1
+	add.l		d1,a0
+
+	btst		#15,d6
+	beq.s		notneg
+	move.b	#$2d,-6(a0)								;Its a negative number
+	neg.w		d6
+notneg:
+
+	moveq		#3,d1										;Accomumlate 4 digits first
+prevdigit:
+	andi.l	#$0000ffff,d6							;Clears the reminder
+	divu		#10,d6
+	move.l	d6,d0
+	swap		d0											;D0 will now be the reminder of the d6/10 division
+	add.b		#$30,d0
+	move.b	d0,-(a0)									;Sets the 4 last digits
+	dbra		d1,prevdigit
+
+	add.b		#$30,d6
+	move.b	d6,-(a0)									;Sets the first digit
+
+	move.l	(sp)+,d6
+	move.l	a1,d0
+	rts
+
+
+
+
+_stringtoint:								;This is probably not the fastest string-to-int
+	tst.l		d6								;converter available, but that doesn't matter much.
+	bne.s		notnullstring
+	moveq		#0,d0
+	rts
+notnullstring:
+
+	move.l	d6,d0
+	move.l	d0,a0
+	move.l	#0,a1
+findfirstdigit:
+	move.b	(a0)+,d1
+	cmp.b		#$30,d1
+	blt.s		findfirstdigit
+	cmp.b		#$39,d1
+	bgt.s		findfirstdigit
+	subq.l	#1,a0
+
+	cmp.l		a0,d0
+	beq.s		notneg2
+	move.l	a0,a1
+
+notneg2:
+	moveq		#0,d1
+	moveq		#0,d0
+findlastdigit:
+	addq		#1,d1
+	move.b	(a0)+,d0
+	cmp.b		#$30,d0
+	blt.s		foundit
+	cmp.b		#$39,d0
+	ble.s		findlastdigit
+foundit:
+
+	subq.l	#1,a0
+
+	move.b	-(a0),d0
+	sub.b		#$30,d0						;ASCII to number
+
+	cmp.l		#2,d1
+	beq.s		justonedigit
+
+	movem.l	d2/d3/d4/d5,-(sp)
+	subq		#3,d1
+	moveq		#0,d3
+
+prevdigit2:
+	moveq		#0,d2
+	move.b	-(a0),d2
+	sub.b		#$30,d2						;ASCII to number
+
+	move.l	d3,d4
+multiplybyten:
+	lsl.l		#1,d2
+	move.l	d2,d5
+	lsl.l		#2,d2
+	add.l		d5,d2
+	dbra		d4,multiplybyten
+
+	add.l		d2,d0
+	addq		#1,d3
+
+	dbra		d1,prevdigit2
+
+	movem.l	(sp)+,d2/d3/d4/d5
+justonedigit:
+	cmp.l		#0,a1
+	beq.s		notneg3
+	cmp.b		#$2d,-1(a1)
+	bne.s		notneg3
+	neg.l		d0
+notneg3:
+sendrexxRI_failed:
+	rts
+
+
+
+	END

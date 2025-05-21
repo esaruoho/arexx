@@ -1,0 +1,264 @@
+
+	TracknamesWindow V0.42 for Octamed 1.03d!
+	Finished 7.8.99
+	Made by Kjetil S. Matheussen 1999.
+
+
+THE GOOD THINGS!
+	(sort of important stuff too, I guess)
+
+	This is a small configurable window that displays the track-names, the
+	keyboardoctave, the current track, on/off status of the visible
+	tracks, volume of the current instrument, midichannel/samplelength of
+	the current instrument, and the name of the current instrument. I personally have now
+	replaced the maincontrol-window with this window in my octamed, and have
+	earned quite some screenspace just on that.
+
+	You specify the track-names with the included plug-in named
+	"tnwcontrol". Press a shortcut-key, and a menu will be visible.
+	The alternatives should be self-explaining. If you just want
+	to set the new name of the track, simply just write the new name,
+	and press return.
+
+	The tracknames are saved into the annotation-text,
+	so you don't need two seperate files for each song.
+
+
+THE BAD THINGS:
+
+	Installation of the window. You should start the window-plug-in by putting
+	the following line into your "rexx:om_startup.omed"-file. If you don't
+	have such a file, just copy the included "om_startup.omed"-file in this
+	package into your rexx: path. Yes, the line is:
+
+	ADDRESS COMMAND "run >NIL: nsm:tracknameswindow"
+
+	...And this may be all you have to do. But the window can look uglier than
+	ugly. So then you can either try a different font for the editor, or try
+	to experiment with the following arguments that can be sent along with the
+	command-line.
+
+	Here they are: (All argument are optional)
+
+	-stoptaskprior [n]       - n = Is the priority of the task while not playing. Is set
+	                               to 8 by default.
+	-playtaskprior [n]       - n = Is the priority of the task while playing. Is set to
+	                               -20 by default.
+	-ypos [n]                - n = the Y coordinate the window will start at. F. ex: 10.
+	                               This is actually an argument you most probably want
+	                               to set. I have hardcoded it to 10, because that
+	                               fits my look. But it may not fit your look.
+	-editorfontname [n]      - n = the name of the editorfont. F.ex: Topaz.font. Should
+	                               not be necesarry to spesify, since the plug-in peeks
+	                               into the memory and find the font octamed is using
+	                               for the editor. But I have had some problems with
+	                               that routine...
+	                               Just forget this argument if the track-seperator-lines
+	                               in the tracknameswindow are placed in the middle
+	                               between each track in the editor.
+	-editorfontsize [n]      - n = size of the editorfont. F. ex: 8. If you specify the
+	                               editorfontname, you *must* allso spesify its size,
+	                               und viseversa.
+
+	-windowheight [n]        - n = the height of the tracknameswindow. F. ex: 30.
+
+	-topmarkcursorpos [n]    - n = The top relative Y coordinate of where the top-line
+	                               marker will be placed. (the cursor)
+	-botmarkcursorpos [n]    - n = The bottom relative Y coordinate of where the bop-line
+	                               marker will be placed. (the cursor)
+	-fontpos [n]             - n = The Y coordinate of where the text in the tracknames-
+	                               window will be placed.
+	-whitelinetop [n]        - n = The top Y coordinate of where the white lines will
+	                               start. "White lines" means the vertical lines that seperate
+	                               your tracks.
+	-whitelinebot [n]        - n = The bottom Y coordinat of where the white lines will
+	                               end.
+
+	Ok. If you didn't quite catch what all this arguments did, just try them out one
+	at a time, and you'll see what happens. It's the 6 last ones that are important for the
+	look of your window. (Important to set, so that it doesn't look awful.).
+
+
+CHANGES
+	Changes from 0.41d to 0.42:
+	-Doesn't take a lot of time to load modules not previously
+	 saved with the tracknameswindow installed anymore.
+	-Fixed a bug in option 7 and 7a in the tnwcontrol plug-in.
+
+	Changes from 0.41cR2 to 0.41d:
+	-Added option 7a in the tnwcontrol plug-in. For further
+	 info, read at the file tnwcontrol.c.
+   -Updated the manual.
+
+	Changes from 0.41c to 0.41cR2:
+	-V0.41b and V0.41c contained an outdated plainnames-file,
+	 which caused the tracknames-window not to work. This
+	 release contains the right version.
+	-0.41c did not contain the om_startup.omed file, now it does.
+
+	Changes from 0.41b to 0.41c:
+	-Option 6 and 7 in the tnwcontrol plug-in read input in
+	 hex-notation, now changed to read as decimal notation.
+	-Possible to copy the tracknames of the current block to all
+	 other blocks.
+	-Added the plug-ins copyjusttracknames and pastejusttracknames.
+
+	Changes from 0.41 to 0.41b:
+	-The "Insert track(s) in current block"-function in the tnwcontrol-
+	 program didn't work. Fixed.
+
+	Changes from 0.40 to 0.41:
+	-Fixed some bugs.
+	-Added a tracknamebuffer.
+	-Some small speed-improvements.
+	-Added the plug-ins copytrack,cuttrack and pastetrack.
+
+	Changes from 0.30 to 0.40:
+	-Added a lot of new features. F.ex different tracknames for each block.
+	-Fixed a lot of bugs. F.ex that the requester-window opened at the workbench-screen
+	 instead of the octamed-screen if you hadn't installed some kind of con-handler that
+	 prevents a con-window from doing this.
+	-Doesn't need to use the update plug-in anymore. (its not a part of the package
+	 anymore either.)
+
+REQURIMENTS
+
+	1. Octamed Soundstudio 1.03c, patched with the octapatch-program in the
+	nsm-package.
+	2. Nsm-port program started. Found in the nsm-package.
+	3. That you have the file named "plainnames" in a path called "nsm:"
+	before starting the tracknameswindow. If not, octamed will probably
+	crash, or something. (This is hardcoded, you *must* have the file
+	"nsm:plainnames". And if its not of the right type, you can crash octamed.)
+	The plainnames-file is in this package, and should be copied automaticly
+	to nsm: if NSM is installed correct.
+
+
+INSTALLATION
+
+	1. Install NSM V0.70 or higher.
+	2. Unpack the tracknameswindow archive into the plug-in directory of nsm.
+	3. If your user-startup file doesn't copy all your plug-ins into your nsm:
+	   path automaticly, you must do point 3 in the REQUIREMENTS.
+	4. Put the following line into your "rexx:om_startup.omed"-file:
+		ADDRESS COMMAND "run >NIL: nsm:tracknameswindow" (plus various arguments)
+		If you don't have an om_startup.omed-file in your rexx-path, just copy
+		the one in this archive into your rexx-path. "rexx:om_startup.omed" are
+	   an arexx-script that is executed automaticly by octamed on every startup.
+	5. Set the argument "ypos <n>" to an apropriate value. This is the Y-position
+	   of your window on the screen. 0 is in the top of your screen.
+	6. If window look ugly, read "THE BAD THINGS".
+	7. Well, I think that was all.
+
+
+
+USAGE
+	1. Use the plug-in named "tnwcontrol" to set the name of the tracks, and
+	other things. Tnwcontrol has a lot of functions built in.
+	2. Use the plug-in named "quittracknameswindow" to quit the window. Beware
+	that you'll have to quit the window before you can exit octamed. If you try
+	to exit octamed before you run the "quittracknameswindow"-plug in, you may
+	run into some trouble, yes. Read source-file for more info.
+	3. Use the plug-ins copytrack, pasttrack and cuttrack to copy past and cut
+	tracks and trackname.
+	4. For more info on the usage of the various plug-ins, read in the sources.
+	There are more info in the commented sections of each plug-in source-file.
+
+BUGS
+	Yes, probably a lot! But this to are the only one I know of:
+	1. When you have 64 tracks in a block,
+	and try to move the cursor to track no 63. What a race! I have no idea why
+	this happens. I have disassembled and gone thru the code quite many times,
+	but just can't find out why this happens. (It only happens if you use 64 tracks).
+	2. The isplaying-function doesn't allways work,
+	so the tracknameswindow does sometimes have the nonplaying-priority when playing,
+	and sometimes playing-priority when not playing. This is a quite serious bug,
+	but I will fix it in the beginning of 99. Should be quite easy to fix.
+
+FAQ
+	1. There are no text in the tracknames-window.
+		-Change the editor-font. Your font does probably not excist, so just
+		 set it to a spesific font. (topaz8 is probably what you are using then.)
+	2. Nothing work!
+		-Have you read the USAGE and INSTALLATION chapters? If you have problems,
+	    mail me your configuration, and I will answer you.
+	3. The tracknameswindow doesn't show right midi-channel/samplelength.
+		-Open the maincontrol-window. If it is allready open, close it and open
+		 it again.
+	   -Hmm. Seems like you have to have this window open. If you don't need
+	    it, just hide it behind some other windows.
+	4. The keyboard-octave doesn't cycle when pressing F1-F5.
+		-Open the maincontrol-window.
+	5. This is version is V0.4xx. Does that mean it is a beta release?
+	   -No. It just means that it isn't perfect yet. The program uses
+	    Unix version numbering, and if there ever comes
+	    a 1.0 version, that means it will be perfect (or at least as
+	    good as). If there ever comes a beta-version, it will be clearly
+	    stated that it is a beta. There aren't any serious well known
+	    bugs, and the program is pretty well tested. It has been running
+	    everyday on my machine now for about 8 months, and have never crashed
+	    or behaved strange. Same goes for the NSM package, which is at V0.74 right now.
+	6.  The tracknameswindow plug-in run as its own task all the time.
+	    Doesn't it set down the performance of Octamed?
+	    -Yes. But not much. On my 030 40 Mzh, it only uses between 1.1-1.6% of the
+	     the cpu-time whether octamed is playing or not, using the default
+	     settings for priority (Using Top 2.00). But if you have a slower machine, and
+	     notice lack of performance, try setting down the "playtaskprior" option,
+	     allthough I doubt that should be necesarry. Amigas Exec handles
+	     task priorities very well, so one can do such things on amigas
+	     without running into trouble, even though the cpu's (680x0) are
+	     not very fast compaired to what is present in other and newer computers.
+	7.  Inside the tracknameswindow.c, it says that the source is a lover version
+	    than the version of the package. Is it the wrong file?
+	    -Probably not. It just means that the tracknameswindow hasn't been changed
+	     since that version. Something else has been updated instead. Just read
+	     the CHANGES section of this file to find out what has been changed.
+	     For the release of the tracknameswindow package V0.41d, the tracknameswindow
+	     plug-in hadn't been updated since the release of V0.41b, while the
+	     tnwcontrol plug-in had been updated all the times.
+	8.  I can't quit Octamed because the tracknameswindow isn't closed!
+	    -You have to use the quittracknameswindow plug-in first. I haven't come
+	     up with a smart solution on this problem, so you just have to live with
+	     it. (good ideas on how this can be solved are welcomed!). To fix this
+	     without resetting your amiga, try using one of those window-closing
+	     programs found on Aminet. I haven't tried them, but it should work.
+	9.  Will the tracknameswindow work on the forthcoming release of Octamed V2?
+	    -No. The NSM system will only work with Octamed 1.03c. But it might be
+	    that I will update the system, if V2 turns out to be a good program.
+	    (at present, V2 infact seems to be worse program, but that might change,
+	    as it is still only a beta).
+
+	And, read the BUGS-section.
+
+
+TODO
+	1. A cople of more arguments to improve the graphical display.
+	2. Fix the program so that the graphical display is perfect at startup whatever
+	font you are using. (_lot_ of work. Seems like the intuition and graphics
+   library aren't very easy to use when it comes to this.)
+	3. Write a better manual. (amigaguide)
+	4. Make a handshakefunction. (or something.)
+
+	And again, feel free to do this things if you wants to. Just contact me to
+	know if there are someone else who is allready working on it.
+
+
+THANKS!
+	Teijo Kinnunen for making such a wonderful program that can be built
+	out to do everything! (If you had released the source too, everyting
+	would be perfect. :)
+
+
+CONTACT
+
+	Kjetil S. Matheussen
+	5423 Sogn Studentby
+	0858 Oslo
+	Norway
+
+	e-mail: kjetilma@ifi.uio.no
+
+	nsm-homepage: http://www.stud.ifi.uio.no/~kjetilma/nsm/
+	octamed-homepage: http://www.octamed.co.uk/
+
+

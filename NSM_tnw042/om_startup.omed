@@ -1,0 +1,8 @@
+/* Startup-file for octamed. If you allready have one of
+	these, just copy the *one* command in this script over
+	to your own script. -KSM.
+*/
+
+ADDRESS COMMAND "run >NIL: nsm:tracknameswindow"	/* Starts the tracksnameswindow. */
+
+EXIT

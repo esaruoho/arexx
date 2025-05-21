@@ -1,0 +1,99 @@
+
+					Cmdfill plug-in for octamed 1.03c and
+					      the nsm plug-in system.
+
+					Updated: 20.2.99
+					Made by Kjetil S. Matheussen 10.12.98.
+
+
+
+This is the idea I got from Ash Atkins:
+
+"
+It would be good if the function took a few parameters:
+Prefix command (ie 19)
+Range (ie 00 to 40 hex or 40 to 80 hex etc.)
+Increments per row (ie 2 to produce commands such as:   --- 1900
+							--- 1902
+							--- 1904
+
+		and 0.5 to produce commands such as:    --- 1900
+							--- 0000
+							--- 1901 etc.
+"
+
+And I hope this function does something like this.
+
+Arguments: (all arguments are optional. If not all argumets are set,
+            a small window will appear where you can write in
+            the necesarry arguments you have left out, manually.)
+
+-p [n]      - n=prefix (=cmdnum)
+-rs [n]     - n=range start
+-re [n]     - n=range end
+-id [n]     - n=incremet or decrement (incdec). This number allways has to be positive.
+POST        - If set, the first cmdlvl will (default=off)
+FILLCMDNUM  - If set, all prefixes (cmdnums) will be written. (default=off)
+
+
+Try it out, and you will see how it works. It's really
+useful! When I got the idea, I didn't quite see the point of it.
+But when I started programming, I found out that I would come
+to use this function _a lot_ when making music in the future!
+
+
+Example 1:
+
+prefix=c
+rangestart=0
+rangesend=40
+incdec=10
+FILLCMDNUM
+							--- -0C00
+							--- -0C10
+							--- -0C20
+							--- -0C30
+							--- -0C40
+
+
+Example 2:
+
+prefix=c
+rangestart=40
+rangesend=0
+incdec=10
+							--- -0C40
+							--- -0030
+							--- -0020
+							--- -0010
+							--- -0000
+
+
+
+Example 3:
+
+prefix=17
+rangestart=0
+rangesend=40
+incdec=10
+POST
+FILLCMDNUM
+							--- -1710
+							--- -1720
+							--- -1730
+							--- -1740
+
+
+
+Example 4:
+
+prefix=c
+rangestart=1
+rangesend=3
+incdec=0.5
+							--- -0C01
+							--- -0000
+							--- -0002
+							--- -0000
+							--- -0003
+

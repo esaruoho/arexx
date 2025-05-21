@@ -1,0 +1,274 @@
+
+
+;Various assembler-functions needed for programs
+;that wants to communicate with the tracknameswindow-program.
+;
+;Many of these functions could have been included in
+;the nsm-package, but I have chosen not to because there
+;aren't any arexx-functions for those, and then it may be
+;impossible to update NSM for future versions of octamed.
+;
+;Made by Kjetil S. Matheussen 1998-1999.
+
+
+
+	xdef	_getcurrinstrumentinfostring
+	xdef	_getcurrinstrumentstring
+	xdef	_geteditorwindowtopleft
+	xdef	_geteditorwindowwidth
+	xdef	_getnumvisibletracks
+	xdef	_getscreenfontsize
+	xdef	_geteditorTextAttrstruct
+	xdef	_getleftmostvisibletrack
+	xdef	_gettracknamedata
+	xdef	_settracknamedata
+	xdef	_gettracknamedata2
+	xdef	_settracknamedata2
+	xdef	_settrackname
+	xdef	_gettrackname
+	xdef	_updatetrackwindow
+
+	section	text,code
+
+;d0=octabase
+_getcurrinstrumentstring:
+	add.l		#$53e,d0
+	rts
+
+;d0=octabase
+_getcurrinstrumentinfostring:
+	add.l		#$541,d0
+	rts
+
+;a0=octabase
+_geteditorwindowtopleft:
+	move.w	$142(a0),d0
+	rts
+
+;a0=octabase
+_getnumvisibletracks:
+	moveq		#0,d0
+	move.b	$515(a0),d0
+	rts
+
+;a0=octabase
+_geteditorwindowwidth:
+	move.w	$78(a0),d0
+	rts
+
+
+;a0=octabase
+_getscreenfontsize:
+	move.w	$410(a0),d0
+	rts
+
+;a0=octabase
+_geteditorTextAttrstruct:
+	add.l		#$41c,a0
+	cmp.l		#0,(a0)
+	beq.s		standardfont
+	move.l	a0,d0
+	rts
+standardfont:
+	moveq		#0,d0
+	rts
+
+;a0=octabase
+_getleftmostvisibletrack:
+	moveq		#0,d0
+	move.b	$75(a0),d0
+	rts
+
+;a0=octabase
+_gettracknamedata:
+	moveq		#-1,d1
+	moveq		#0,d2
+	bsr.s		_gettrackname
+	tst.l		d0
+	beq.s		finished
+
+	moveq		#0,d0
+	move.b	(a0),d0
+	rts
+
+;a0=octabase,d6=newdata
+_settracknamedata:
+	moveq		#-1,d1
+	moveq		#0,d2
+	bsr.s		_gettrackname
+	tst.l		d0
+	beq.s		finished
+
+	move.b	d6,(a0)
+	rts
+
+;a0=octabase
+_gettracknamedata2:
+	moveq		#-1,d1
+	moveq		#0,d2
+	bsr.s		_gettrackname
+	tst.l		d0
+	beq.s		finished
+
+	moveq		#0,d0
+	move.b	1(a0),d0
+	rts
+
+;a0=octabase,d6=newdata
+_settracknamedata2:
+	moveq		#-1,d1
+	moveq		#0,d2
+	bsr.s		_gettrackname
+	tst.l		d0
+	beq.s		finished
+
+	move.b	d6,1(a0)
+	rts
+
+
+;a0=octabase,a1=new string;d1=track,d2=placement,d3=block
+_settrackname:
+	exg		d3,d2
+	bsr.s		_gettrackname		;the result is allso loaded into a0
+	tst.l		d0
+	beq.s		finished				;Failed
+	exg		d2,d3
+	add.l		d2,a0
+	moveq		#8,d0
+	sub.l		d2,d0
+
+loop:
+	cmp.b		#0,(a1)
+	bne.s		next
+	bra.s		setspace
+next:
+	move.b	(a1)+,(a0)+
+next2:
+	dbra		d0,loop
+
+finished:
+	rts								;Finished!
+
+setspace:
+	move.b	#$20,(a0)+			;This is very probably unnecesarry...
+	bra.s		next2
+
+
+
+;a0=octabase,d1=track,d2=block
+_gettrackname:
+	move.l	d2,-(sp)
+
+	andi.l	#$0000ffff,d1
+	andi.l	#$0000ffff,d2
+	lsl.l		#6,d2
+	add.l		d2,d1
+	addq.l	#2,d1
+
+	add.l		#$168a,a0			;all those constants....
+
+nextname:
+	move.l	(a0),a0
+	cmp.l		#0,(a0)
+	beq.s		gettrackname_failed
+	dbra		d1,nextname
+
+	add.l		#14,a0
+	move.l	a0,d0
+
+	move.l	(sp)+,d2
+	rts
+
+gettrackname_failed:
+	move.l	(sp)+,d2
+	moveq		#0,d0
+	rts
+
+
+_updatetrackwindow:
+
+;	Used registers in getoctabase:
+;	A6 - exec.library
+;	A5 - My message-port
+;	A3 - Message
+;	A1 - TNM-port
+
+	movem.l		a3/a5-a6,-(sp)
+
+	move.l		4.w,a6
+
+	jsr			-$29a(a6)							;Creates a message-port
+	tst.l			d0
+	beq.s			exit
+	move.l		d0,a5
+
+	lea			clearend(pc),a3
+
+	moveq			#3,d0								;Reset the Message to nulls. Don't know if this is necesarry, but...
+loop2:
+	clr.l			-(a3)									;A3 will eventullly be 'Message'
+	dbra			d0,loop2
+
+
+	move.l		a5,14(a3)							;Set the replyport for the message
+
+	jsr			-120(a6)								;Disable interrupts
+
+
+	lea			tnmportname(pc),a1				;Finds the NSM-port
+	jsr			-390(a6)
+	tst			d0
+	beq.s			could_not_find_port
+
+
+	move.l		d0,a0									;Sends the message
+	move.l		a3,a1
+	jsr			-366(a6)
+
+
+	jsr			-126(a6)								;Enable interrupts
+
+
+	move.l		a5,a0									;Waits for reply
+	jsr			-$180(a6)
+
+
+close_port:
+	move.l		a5,a0
+	jsr			-$2a0(a6)
+
+
+exit:
+	movem.l		(sp)+,a3/a5-a6
+	rts													;Finished!
+
+could_not_find_port:
+	jsr			-126(a6)								;Enable interrupts
+	bra.s			close_port
+
+
+
+tnmportname:
+	dc.b			"tracknamesport",0
+
+
+	dc.b			0										;even
+
+
+Message:													;A Message-structure.
+	;Structure message
+	 ;Structure Node
+	  dc.l		  0			;struct node *ln_succ
+	  dc.l		  0			;struct node *ln_pred
+	  dc.b		  5			;UBYTE ln_type=NT_MESSAGE
+	  dc.b		  0			;UBYTE priority
+	  dc.l		  0			;char *ln_Name
+	 dc.l			 0			;struct MsgPort *mn_replyport
+clearend:
+	 dc.w			20			;UWORD mn_Length
+
+;End of Message structure. Length: 24 bytes
+
+
+	END
+
